@@ -258,7 +258,9 @@ jobs:
               | while IFS= read -r z; do echo "::error::${z:0:400}"; done
             { echo "### Xcode-Fehler"; echo '```'; grep -E "error:|BUILD FAILED|Multiple commands produce" "$1" | sort -u | head -n 40; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           }
-          if cordova build ios --debug --emulator --no-telemetry 2>&1 | tee build_log.txt; then
+          # compile statt build: build wuerde vorher erneut "prepare" ausfuehren und dabei
+          # die eben eingebundenen Sprachordner (de.lproj/en.lproj) wieder entfernen.
+          if cordova compile ios --debug --emulator --no-telemetry 2>&1 | tee build_log.txt; then
             echo "Build mit Lokalisierung erfolgreich."
           else
             fehler_melden build_log.txt
@@ -267,7 +269,7 @@ jobs:
               echo "::warning::Build mit Lokalisierung fehlgeschlagen - zweiter Versuch ohne (App-Name dann nur TurnierPro)." | tee -a "$GITHUB_STEP_SUMMARY"
               cp "$PBX.ohne-l10n" "$PBX"
               rm -rf platforms/ios/build
-              cordova build ios --debug --emulator --no-telemetry 2>&1 | tee build_log2.txt || { fehler_melden build_log2.txt; exit 1; }
+              cordova compile ios --debug --emulator --no-telemetry 2>&1 | tee build_log2.txt || { fehler_melden build_log2.txt; exit 1; }
             else
               exit 1
             fi
@@ -357,7 +359,7 @@ jobs:
             --arg id "$IDENTITAET" --arg team "$TEAM_ID" --arg profil "$PROFIL_UUID" \
             '{ios:{release:{codeSignIdentity:$id, developmentTeam:$team, provisioningProfile:$profil, packageType:"app-store", automaticProvisioning:false}}}' \
             > build.json
-          cordova build ios --release --device --buildConfig=build.json --no-telemetry
+          cordova compile ios --release --device --buildConfig=build.json --no-telemetry
           rm -f build.json
 
       - name: IPA hochladen (Artefakt)
