@@ -143,6 +143,10 @@ jobs:
         cordova plugin add ./plugins-src/cordova-plugin-tb-share --no-telemetry
         # Bildschirm anlassen, solange die Turnieruhr laeuft (FLAG_KEEP_SCREEN_ON)
         cordova plugin add cordova-plugin-insomnia@4.3.0 --no-telemetry
+        # Signal bei gesperrtem Bildschirm
+        cordova plugin add cordova-plugin-local-notification@1.2.3 --no-telemetry
+        # In-App-Kauf "Pro" (Google Play Billing)
+        cordova plugin add cordova-plugin-purchase@13.18.0 --no-telemetry
         echo "--- installierte Plugins ---"
         cordova plugin ls
         test -f platforms/android/app/src/main/java/de/tacticboard/share/TbShare.java \

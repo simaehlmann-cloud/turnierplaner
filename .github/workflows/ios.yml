@@ -54,6 +54,10 @@ jobs:
       PLUGIN_STATUSLEISTE: 'cordova-plugin-statusbar@4.0.0'
       # Bildschirm anlassen, solange die Turnieruhr laeuft (idleTimerDisabled)
       PLUGIN_WACH: 'cordova-plugin-insomnia@4.3.0'
+      # Signal bei gesperrtem Bildschirm (letzte Minute, Abpfiff)
+      PLUGIN_ERINNERUNG: 'cordova-plugin-local-notification@1.2.3'
+      # In-App-Kauf "Pro" (StoreKit)
+      PLUGIN_KAUF: 'cordova-plugin-purchase@13.18.0'
 
     steps:
       - name: Repository auschecken
@@ -136,6 +140,8 @@ jobs:
           cordova plugin add "$PLUGIN_TEILEN" --no-telemetry
           cordova plugin add "$PLUGIN_STATUSLEISTE" --no-telemetry
           cordova plugin add "$PLUGIN_WACH" --no-telemetry
+          cordova plugin add "$PLUGIN_ERINNERUNG" --no-telemetry
+          cordova plugin add "$PLUGIN_KAUF" --no-telemetry
           # Das eigene Teilen-Plugin (plugins/cordova-plugin-tb-share) ist
           # reines Android und wird hier bewusst nicht eingebunden.
           cordova plugin ls
@@ -260,6 +266,13 @@ jobs:
           }
           # compile statt build: build wuerde vorher erneut "prepare" ausfuehren und dabei
           # die eben eingebundenen Sprachordner (de.lproj/en.lproj) wieder entfernen.
+          # Sprachdateien direkt vor dem Kompilieren an die Stelle legen, an der
+          # das Xcode-Projekt sie erwartet (neben der Info.plist).
+          INFO=$(find platforms/ios -maxdepth 3 -name '*-Info.plist' -not -path '*/Pods/*' | head -1)
+          RES=$(dirname "$INFO")
+          for L in de en; do mkdir -p "$RES/$L.lproj" && cp ../l10n/ios/$L.lproj/InfoPlist.strings "$RES/$L.lproj/"; done
+          echo "::notice::Sprachdateien in $RES: $(ls -d "$RES"/*.lproj 2>/dev/null | xargs -n1 basename | tr '\n' ' ')"
+          grep -o '[a-z]*\.lproj/InfoPlist.strings' "$(find platforms/ios -maxdepth 2 -name project.pbxproj | head -1)" | sort -u | tr '\n' ' ' | sed 's/^/::notice::Im Projekt eingetragen: /'; echo
           if cordova compile ios --debug --emulator --no-telemetry 2>&1 | tee build_log.txt; then
             echo "Build mit Lokalisierung erfolgreich."
           else
