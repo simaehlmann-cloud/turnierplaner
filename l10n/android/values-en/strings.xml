@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Englischer App-Name auf dem Startbildschirm. Der deutsche Name kommt aus
+     <name> in config.xml (Standard fuer alle uebrigen Sprachen). -->
+<resources>
+    <string name="app_name">TourneyPro</string>
+    <string name="launcher_name">TourneyPro</string>
+    <string name="activity_name">TourneyPro</string>
+</resources>
