@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "TurnierPro",
+  "short_name": "TurnierPro",
+  "description": "Turniere für Verein und Sportunterricht planen – Spielplan, Felder, Zeiten, Ergebnisse und Tabellen, komplett offline.",
+  "lang": "de",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1a1a",
+  "theme_color": "#111111",
+  "icons": [
+    { "src": "image.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon_maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

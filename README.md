@@ -1,0 +1,112 @@
+# TurnierPro – Turniere planen für Verein, Schule und Sportunterricht
+
+Offline-App für Trainer:innen, Jugendleiter:innen und Sportlehrkräfte. Aufgebaut wie **PitchPro**:
+eine `index.html`, Cordova-Builds über GitHub Actions für den App Store und Google Play,
+Deutsch/Englisch mit Flaggen auf der Startseite, dunkles Design mit Hell-Modus für die Sonne.
+
+Arbeitstitel: **TurnierPro** (Deutsch) / **TourneyPro** (Englisch) – siehe „Umbenennen“ unten.
+
+## Funktionen (Phase 1)
+
+- **Meine Teams** – Teamname, Verein/Schule/Klasse, Stärke 1–5 ★, Wappen/Logo und Mannschaftsfoto
+  (Kamera oder Fotos; verkleinert, nur auf dem Gerät), Kader mit Rückennummern (einzeln oder als
+  eingefügte Liste). Mehrere Teams auf einmal anlegen (ein Team pro Zeile).
+- **Turnier anlegen** – Name, Datum, Beginn; Teams aus „Meine Teams“ übernehmen oder für den
+  Sportunterricht **schnell nummerierte Teams** erzeugen („Team 1 … 8“, Bezeichnung frei).
+  Jedes Team mit Schalter **aktiv/passiv** und eigener Stärke für dieses Turnier.
+- **Modi** – Jeder gegen jeden (optional Hin- und Rückspiel) · Gruppen + Finalrunde (Anzahl Gruppen,
+  Weiterkommende je Gruppe, zusätzlich beste Nächstplatzierte, Spiel um Platz 3, Platzierungsspiele
+  bei zwei Gruppen) · reines K.-o.-System mit **Freilosen** für die Gesetzten.
+- **Auslosung** – fair verteilt (Gruppenköpfe nach Stärke), Leistungsgruppen, Zufall oder manuell.
+  Danach **Ziehen am Griff ⠿** oder Antippen/Tauschen. K.-o.: Setzliste, 1 und 2 treffen frühestens im Finale.
+  Erste K.-o.-Runde automatisch über Kreuz (A1–B2, B1–A2), möglichst keine Teams aus derselben Gruppe.
+- **Felder & Zeiten** – beliebig viele Felder (Feld 1/2 …, A/B … oder eigene Namen wie „Halle 1“),
+  Spieldauer, Wechselpause, eigene Spieldauer für die Finalrunde, Pause vor der Finalrunde.
+  Der Spielplan verteilt die Spiele so, dass kein Team doppelt belegt ist und möglichst niemand
+  zweimal direkt hintereinander spielt. **Vorschau** vor dem Erstellen: Anzahl Spiele, Runden, Uhrzeit von–bis.
+- **Wertung frei einstellbar** – Tore, Punkte oder Sätze (bis 7, Bälle werden mitgezählt),
+  Unentschieden ja/nein, Punkte für Sieg/Unentschieden/Niederlage, Reihenfolge bei Gleichstand
+  (Differenz, erzielte Tore/Punkte, Balldifferenz, **direkter Vergleich**, Siege) frei sortierbar.
+- **Schiedsrichter** – keine, pausierende Teams (gleichmäßig, bevorzugt aus derselben Gruppe) oder
+  eine Personenliste (reihum, nie zwei Spiele gleichzeitig). Je Spiel änderbar.
+- **Ergebnisse** – Spiel antippen, Tore mit ＋/− oder Sätze eintragen. Bei Gleichstand in der
+  Finalrunde (oder wenn Unentschieden nicht erlaubt sind) wird der Sieger der Entscheidung abgefragt
+  (Neunmeter, Golden Goal, Los – Ergebnis optional). Kampflos-Wertung. **Team festlegen** in der
+  Finalrunde (z. B. nach Losentscheid). Ändert sich ein Ergebnis so, dass in späteren Spielen andere
+  Teams stehen, werden deren Ergebnisse nach Rückfrage gelöscht.
+- **Team fällt aus** – auf passiv setzen: offene Gruppenspiele entfallen, in der Finalrunde kommt der
+  Gegner kampflos weiter. Gespielte Ergebnisse bleiben.
+- **Tabellen** – live, Qualifikationsplätze grün, „=“ bei echtem Gleichstand (Losentscheid nötig),
+  Finalrunde, **Endstand mit Siegerpodest**.
+- **Turnieruhr** – eine Uhr für alle Felder, läuft über Zeitstempel (stimmt auch nach App-Wechsel),
+  Start/Pause/Reset, ±1 Minute, Runde vor/zurück. **Signaltöne** bei Anpfiff, letzter Minute und
+  Ende (Bluetooth-Box möglich), Bildschirm bleibt an. **Verzug-Assistent**: Liegt das Turnier hinter
+  dem Plan, verschiebt ein Tipp alle folgenden Anstoßzeiten.
+- **Teilen** – aktueller Stand, kompletter Spielplan oder nächste Runde als Text mit Emojis
+  (WhatsApp & Co.); Spielplan oder Tabellen als **Bild** (1080 px, zum Teilen, Sichern, Drucken).
+- **Team-Filter** im Spielplan – nur die Spiele und Schiri-Einsätze eines Teams (für Trainer/Eltern).
+- **Turnier abschließen** (Archiv, Namen bleiben wie am Turniertag), **als Vorlage kopieren**, löschen.
+- **Sicherung** – alles inkl. Bilder als Datei exportieren/importieren (⚙︎). Erinnerung nach 30 Tagen.
+- **iPad** – Spielplan und Tabellen zweispaltig, alle Ausrichtungen.
+
+## Geplant
+
+- **Phase 2:** Kinderfußball-Modus (DFB-Spielform / „Champions-League-System“ mit Auf- und Abstieg
+  über die Felder), Spielereignisse (Torschützen aus dem Kader, Karten, Zeitstrafen mit Countdown),
+  Torschützenliste und Fair-Play-Wertung, Urkunden als PDF (Platzierung und Teilnahme, mit
+  Mannschaftsfoto, Drucken per AirPrint über das Teilen-Menü), Turniervorlagen und Archiv-Statistik.
+- **Phase 3:** Turnier per Datei/QR an andere Geräte übergeben, Signal auch bei gesperrtem Bildschirm
+  (lokale Benachrichtigung), Freemium mit In-App-Kauf (inkl. „Käufe wiederherstellen“), Play Store.
+
+## Builds
+
+Die Workflows sind von PitchPro übernommen und angepasst (App-ID `de.turnierpro.app`):
+
+- `.github/workflows/ios.yml` – jeder Push auf `main` baut zur Kontrolle (unsigniert, mit Zertifikat
+  auch signiert). **Upload nach App Store Connect nur per „Run workflow“.** Gleiche Secrets wie bei
+  PitchPro, aber ein **neues App-Store-Profil für `de.turnierpro.app`**:
+  1. developer.apple.com → Identifiers → neue App-ID `de.turnierpro.app` (keine besonderen Capabilities).
+  2. Profiles → neues „App Store Connect“-Profil für diese App-ID mit dem vorhandenen Distributionszertifikat.
+  3. Profil base64-kodieren und als Secret `IOS_PROVISIONING_PROFILE` im neuen Repo hinterlegen; die
+     übrigen Secrets (`IOS_CERTIFICATE_P12_BASE64`, `IOS_CERTIFICATE_PASSWORD`, `IOS_TEAM_ID`,
+     `IOS_SIGNING_IDENTITY`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`) wie bei PitchPro.
+  4. In App Store Connect eine neue App mit dieser Bundle-ID anlegen.
+- `.github/workflows/android.yml` – ohne Secrets eine Debug-APK, mit `KEYSTORE_BASE64`,
+  `KEYSTORE_PASSWORD`, `KEY_ALIAS` (= `turnierpro`), `KEY_PASSWORD` ein signiertes AAB.
+  **Eigenen Keystore für TurnierPro anlegen** (Anleitung oben im Workflow).
+- Version in `config.xml` **und** `APP_VERSION` in `index.html` vor jedem Store-Update erhöhen.
+- Plugins nur in den Workflows: `cordova-plugin-x-socialsharing` (iOS, Teilen), `cordova-plugin-statusbar`,
+  `cordova-plugin-insomnia` (Bildschirm an, solange die Uhr läuft); Android: `plugins/cordova-plugin-tb-share`.
+- **iOS-Berechtigungen:** Kamera (`NSCameraUsageDescription`) und Fotos (`NSPhotoLibraryUsageDescription`)
+  für Wappen/Mannschaftsfoto; der Workflow bricht ab, wenn ein Text fehlt.
+- **App-Name zweisprachig:** `tools/ios_localize.rb` bindet `l10n/ios/<sprache>.lproj/InfoPlist.strings`
+  ins Xcode-Projekt ein (Name und Berechtigungstexte auf Deutsch bzw. Englisch). Android nutzt
+  `l10n/android/values-en/strings.xml`. Der Workflow prüft im fertigen App-Paket, ob die Sprachordner
+  enthalten sind, und warnt sonst in der Zusammenfassung (der Build läuft dann mit deutschem Namen weiter).
+- Icons: `image.png`, `icon_fg.png`, `icon_bg.png`, `icon_store.png`, `icon_maskable.png`
+  (Platzhalter: Turnierbaum mit Pokal auf Rasen); `tools/` erzeugt daraus alle Größen.
+
+## Umbenennen (Name steht noch nicht fest)
+
+Den Namen an diesen Stellen ändern: `config.xml` (`<name>`), `l10n/ios/de.lproj` und `en.lproj`
+(`InfoPlist.strings`), `l10n/android/values-en/strings.xml`, `index.html` (`appName` in beiden Sprachen,
+`<title>`), `manifest.json`, `APP_NAME` in `.github/workflows/ios.yml`, Datenschutz/Impressum.
+Die **App-ID** (`de.turnierpro.app`) muss nicht zum Namen passen und sollte nach dem ersten Upload
+nicht mehr geändert werden.
+
+**Wichtig beim Hochladen über die GitHub-Weboberfläche:** Der Ordner `.github` beginnt mit einem Punkt
+und ist im Finder/Explorer oft unsichtbar. Ohne ihn gibt es keine Builds.
+
+## Tests
+
+```
+node tests/engine.test.js   # Spielplan, Auslosung, Tabellen, K.-o., Zeiten, Schiedsrichter (19 Tests)
+node tests/i18n.test.js     # alle Texte in Deutsch und Englisch vorhanden
+```
+
+Die Turnier-Logik steht in `index.html` zwischen `ENGINE-START` und `ENGINE-END` und läuft ohne Browser.
+
+## Lokal ausprobieren
+
+`python3 -m http.server` im Repo-Ordner starten und `http://localhost:8000` im Browser öffnen
+(Entwicklertools → Handy-Ansicht).
