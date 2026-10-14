@@ -1,6 +1,6 @@
 /* Name auf dem Home-Bildschirm und Texte der Berechtigungsabfragen (Deutsch) */
 "CFBundleDisplayName" = "TurnierPro";
 "CFBundleName" = "TurnierPro";
-"NSCameraUsageDescription" = "TurnierPro nutzt die Kamera nur, wenn du für ein Team ein Wappen oder Mannschaftsfoto aufnimmst. Das Bild bleibt auf deinem Gerät.";
+"NSCameraUsageDescription" = "TurnierPro nutzt die Kamera nur, wenn du ein Wappen oder Mannschaftsfoto aufnimmst oder den QR-Code eines Turniers scannst. Bilder bleiben auf deinem Gerät.";
 "NSPhotoLibraryUsageDescription" = "TurnierPro übernimmt nur das Bild, das du für ein Wappen oder Mannschaftsfoto auswählst. Es bleibt auf deinem Gerät.";
 "NSPhotoLibraryAddUsageDescription" = "TurnierPro sichert auf deinen Wunsch exportierte Spielpläne und Tabellen über das Teilen-Menü.";
