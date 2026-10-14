@@ -1,0 +1,365 @@
+# =====================================================================
+# TurnierPro - Play-Store-Release-Build (signiertes .aab + Test-APK)
+#
+# EINMALIGE VORBEREITUNG (auf deinem PC, Java muss installiert sein):
+#
+# 1. Keystore erzeugen (Passwörter gut aufbewahren - ohne den Keystore
+#    kannst du NIE wieder Updates für die App veröffentlichen!):
+#
+#    keytool -genkey -v -keystore turnierpro.keystore -alias turnierpro \
+#      -keyalg RSA -keysize 2048 -validity 10000
+#
+# 2. Keystore in Base64 umwandeln:
+#    - Linux/Mac:  base64 -w 0 turnierpro.keystore > keystore.txt
+#    - Windows:    certutil -encode turnierpro.keystore keystore.txt
+#                  (dann die BEGIN/END-Zeilen aus der Datei loeschen)
+#
+# 3. Im GitHub-Repo unter Settings -> Secrets and variables -> Actions
+#    diese vier Secrets anlegen:
+#      KEYSTORE_BASE64    = Inhalt von keystore.txt
+#      KEYSTORE_PASSWORD  = das Keystore-Passwort
+#      KEY_ALIAS          = turnierpro
+#      KEY_PASSWORD       = das Key-Passwort (meist gleich dem Keystore-Passwort)
+#
+# Ergebnis jedes Builds:
+#   - TurnierPro-PlayStore-AAB : diese Datei laedst du in der
+#     Google Play Console hoch
+#   - TurnierPro-Release-APK   : signierte APK zum direkten Testen
+#
+# WICHTIG: Vor jedem Play-Store-Update die version in config.xml erhoehen
+# (z.B. 2.0.0 -> 2.0.1), sonst lehnt Google den Upload ab.
+#
+# OHNE Secrets baut dieser Workflow automatisch eine Debug-APK.
+#
+# ---------------------------------------------------------------------
+# APP-ICONS
+#
+# Im Repo liegen nur drei Master:
+#   image.png     512x512  RGB   - Launcher vor Android 8, PWA, Favicon
+#   icon_fg.png  1024x1024 RGBA  - Adaptive-Vordergrund (MUSS transparent sein)
+#   icon_bg.png  1024x1024 RGB   - Adaptive-Hintergrund (Rasen)
+# Daraus erzeugt tools/make_android_icons.py alle Dichte-Varianten unter
+# res/android/; config.xml verweist darauf. Die Dichte-Dateien gehoeren
+# NICHT ins Repo.
+#
+# =====================================================================
+
+name: Build Android Release (Play Store)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  # Feste Versionen = reproduzierbare Builds. Ein Update der Plattform
+  # kann so nicht mehr ueber Nacht den Build zerlegen; du hebst die
+  # Nummer bewusst an, wenn du es willst.
+  CORDOVA_CLI: '13.0.0'
+  CORDOVA_ANDROID: '15.1.0'
+  NODE_VERSION: '22'
+  JAVA_VERSION: '17'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ env.JAVA_VERSION }}
+
+    - name: Install Cordova
+      run: npm install -g cordova@${CORDOVA_CLI}
+
+    - name: Create and Setup Cordova Project
+      run: |
+        set -euo pipefail
+        cordova create app_build de.turnierpro.app TurnierPro
+        cp index.html app_build/www/index.html
+        cp manifest.json app_build/www/manifest.json
+        cp sw.js app_build/www/sw.js
+        cp image.png app_build/www/image.png
+        cp icon_maskable.png app_build/www/icon_maskable.png
+        cp datenschutz.html app_build/www/datenschutz.html
+        cp impressum.html app_build/www/impressum.html
+        cp datenschutz-en.html app_build/www/datenschutz-en.html
+        cp impressum-en.html app_build/www/impressum-en.html
+        cp config.xml app_build/config.xml
+        # Englischer App-Name (values-en), siehe config.xml
+        cp -r l10n app_build/l10n
+
+    - name: CSP pruefen
+      run: |
+        set -euo pipefail
+        # TurnierPro laedt nichts nach. Steht in der CSP doch ein externer Host,
+        # wurde index.html versehentlich geaendert - dann lieber abbrechen.
+        if grep -o 'http-equiv="Content-Security-Policy"[^>]*' app_build/www/index.html | grep -q 'https\?://'; then
+          echo "::error::Die CSP in index.html erlaubt externe Hosts."
+          exit 1
+        fi
+        echo "CSP ohne externe Hosts."
+
+    - name: App-Icons erzeugen
+      run: |
+        set -euo pipefail
+        pip install --quiet --disable-pip-version-check pillow
+        # Erzeugt res/android/ aus image.png, icon_fg.png und icon_bg.png.
+        # Bricht ab, wenn ein Master kein echtes PNG ist oder dem
+        # Adaptive-Vordergrund der Alphakanal fehlt.
+        python3 tools/make_android_icons.py
+        cp -r res app_build/res
+
+    - name: Add Android Platform
+      run: |
+        set -euo pipefail
+        cd app_build
+        cordova platform add android@${CORDOVA_ANDROID} --no-telemetry
+        echo "--- Verwendete Versionen ---"
+        cordova --version
+        cordova platform ls
+        java -version
+
+    - name: Teilen-Plugin einbinden
+      run: |
+        set -euo pipefail
+        # NICHT nach app_build/plugins kopieren - dort verwaltet Cordova
+        # seine eigenen installierten Plugins.
+        cp -r plugins app_build/plugins-src
+        cd app_build
+        cordova plugin add ./plugins-src/cordova-plugin-tb-share --no-telemetry
+        # Bildschirm anlassen, solange die Turnieruhr laeuft (FLAG_KEEP_SCREEN_ON)
+        cordova plugin add cordova-plugin-insomnia@4.3.0 --no-telemetry
+        echo "--- installierte Plugins ---"
+        cordova plugin ls
+        test -f platforms/android/app/src/main/java/de/tacticboard/share/TbShare.java \
+          || { echo "::error::TbShare.java wurde nicht in das Android-Projekt uebernommen."; exit 1; }
+        grep -q 'tbshare' platforms/android/app/src/main/AndroidManifest.xml \
+          || { echo "::error::FileProvider fehlt im AndroidManifest."; exit 1; }
+        echo "Teilen-Plugin eingebunden."
+
+    - name: Icon-Ergebnis pruefen
+      run: |
+        set -euo pipefail
+        cd app_build/platforms/android/app/src/main/res
+        # Cordova legt die beiden Adaptive-Ebenen und die ic_launcher.xml in
+        # mipmap-<dichte>-v26/ ab, das klassische Icon dagegen in mipmap-<dichte>/.
+        # (getAdaptiveImageResourcePath bzw. getImageResourcePath in cordova-android)
+        fehler=0
+        for d in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+          echo "--- $d ---"
+          for f in "mipmap-$d-v26/ic_launcher.xml" \
+                   "mipmap-$d-v26/ic_launcher_foreground.png" \
+                   "mipmap-$d-v26/ic_launcher_background.png" \
+                   "mipmap-$d/ic_launcher.png"; do
+            if [ -f "$f" ]; then
+              echo "  ok    $f"
+            else
+              echo "::error::$f fehlt."
+              fehler=1
+            fi
+          done
+        done
+        echo ""
+        echo "--- Inhalt von mipmap-xxxhdpi-v26/ic_launcher.xml ---"
+        cat mipmap-xxxhdpi-v26/ic_launcher.xml 2>/dev/null || true
+        echo ""
+        [ "$fehler" -eq 0 ] || { echo "::error::Launcher-Icons unvollstaendig."; exit 1; }
+        echo "Alle Launcher-Icons vorhanden."
+
+    # ---------- DEBUG-BUILD (laeuft, solange keine Secrets angelegt sind) ----------
+
+    - name: Build Debug APK (ohne Keystore)
+      if: env.HAS_KEYSTORE != 'true'
+      run: |
+        # pipefail ist entscheidend: ohne das liefert die Pipe den Exit-Code von
+        # tee (immer 0), und ein gescheiterter Gradle-Lauf wuerde als Erfolg
+        # durchgehen. Genau das ist hier passiert.
+        set -o pipefail
+        echo "Keine Keystore-Secrets gefunden - baue Debug-APK zum Testen."
+        cd app_build
+        ergebnis=0
+        cordova build android --device --no-telemetry 2>&1 | tee build_log.txt || ergebnis=$?
+        # Zusaetzlich auf BUILD FAILED pruefen: "BUILD SUCCESSFUL" kann von einem
+        # Teilprojekt stammen, waehrend der Gesamtlauf scheitert.
+        if [ "$ergebnis" -ne 0 ] || grep -q "BUILD FAILED" build_log.txt; then
+          echo ""
+          echo "================= FEHLER-DIAGNOSE ================="
+          # Gradles eigener Fehlerblock ist am aussagekraeftigsten
+          sed -n '/FAILURE: Build/,/^BUILD FAILED/p' build_log.txt | head -n 60 || true
+          echo "--- weitere Fundstellen ---"
+          grep -n -i -B 2 -A 6 "error:\|Exception\|What went wrong" build_log.txt | head -n 60 || true
+          echo "==================================================="
+          exit 1
+        fi
+
+    - name: Build-Ergebnisse auflisten
+      if: always()
+      run: |
+        # Schreibt zusaetzlich in die Job-Zusammenfassung. Die steht oben auf
+        # der Uebersichtsseite des Laufs - man muss keinen Schritt aufklappen.
+        {
+          echo "## Build-Diagnose"
+          echo ""
+          echo "HAS_KEYSTORE = \`${HAS_KEYSTORE:-<leer>}\`"
+          echo ""
+          echo "### Gefundene Pakete im gesamten Android-Projekt"
+          echo '```'
+          if [ -d app_build/platforms/android ]; then
+            gefunden=$(find app_build/platforms/android -type f \
+                       \( -name '*.apk' -o -name '*.aab' \) -printf '%10s  %P\n' | sort -k2)
+            if [ -n "$gefunden" ]; then echo "$gefunden"; else echo "KEINE"; fi
+          else
+            echo "platforms/android existiert nicht"
+          fi
+          echo '```'
+          echo ""
+          echo "### Inhalt von app/build/outputs"
+          echo '```'
+          find app_build/platforms/android/app/build/outputs -maxdepth 3 2>/dev/null \
+            | sed 's|app_build/platforms/android/app/build/||' | head -40 \
+            || echo "existiert nicht - Gradle hat nichts erzeugt"
+          echo '```'
+          echo ""
+          echo "### Provider im ZUSAMMENGEFUEHRTEN Manifest"
+          echo '```'
+          mm=$(find app_build/platforms/android/app/build -name 'AndroidManifest.xml' \
+                 -path '*merged*' 2>/dev/null | head -1)
+          if [ -n "$mm" ]; then
+            grep -o 'android:authorities="[^"]*"' "$mm" || echo "keine Authority im Manifest"
+          else
+            echo "(kein zusammengefuehrtes Manifest - Build kam nicht so weit)"
+          fi
+          echo '```'
+          echo ""
+          echo "### Gradles Fehlerblock"
+          echo '```'
+          sed -n '/FAILURE: Build/,/^BUILD FAILED/p' app_build/build_log.txt 2>/dev/null \
+            | head -40 || echo "(kein Fehlerblock)"
+          echo '```'
+          echo ""
+          echo "### Ausgefuehrte Gradle-Tasks"
+          echo '```'
+          grep -o '> Task :[^ ]*.*' app_build/build_log.txt 2>/dev/null | tail -40 \
+            || echo "keine Task-Zeilen im Log"
+          echo '```'
+          echo ""
+          echo "### Enthaelt das Log den Assemble-Task?"
+          echo '```'
+          grep -i -c "assembleDebug\|cdvBuildDebug\|packageDebug" app_build/build_log.txt 2>/dev/null \
+            | sed 's/^/Treffer: /' || echo "kein Log"
+          grep -i "Built the following\|No APK\|SKIPPED\|UP-TO-DATE" app_build/build_log.txt 2>/dev/null \
+            | tail -10 || true
+          echo '```'
+          echo ""
+          echo "### Letzte Zeilen des Build-Logs"
+          echo '```'
+          tail -30 app_build/build_log.txt 2>/dev/null || echo "kein build_log.txt"
+          echo '```'
+        } | tee -a "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload Debug APK
+      if: env.HAS_KEYSTORE != 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: TurnierPro-Debug-APK
+        path: app_build/platforms/android/app/build/outputs/apk/debug/*.apk
+        # Fehlt die Datei, soll der Build rot werden. Vorher gab es nur eine
+        # Warnung - der Lauf war gruen, obwohl nichts herauskam.
+        if-no-files-found: error
+
+    # ---------- RELEASE-BUILD (laeuft automatisch, sobald die 4 Secrets angelegt sind) ----------
+
+    - name: Restore Keystore
+      if: env.HAS_KEYSTORE == 'true'
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      run: printf '%s' "$KEYSTORE_BASE64" | base64 -d > app_build/release.keystore
+
+    - name: Verify Keystore
+      if: env.HAS_KEYSTORE == 'true'
+      env:
+        KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+        KS_ALIAS: ${{ secrets.KEY_ALIAS }}
+      run: |
+        # Prueft VOR dem Build, ob Keystore, Passwort und Alias zusammenpassen -
+        # so bekommst du eine klare Fehlermeldung statt eines Gradle-Fehlers.
+        # Die Ausgabe wird verworfen, damit nichts Sensibles im Log landet.
+        keytool -list -keystore app_build/release.keystore \
+          -storepass "$KS_PASS" -alias "$KS_ALIAS" > /dev/null 2>&1 \
+          || { echo "::error::Keystore-Pruefung fehlgeschlagen! Stimmen KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS und KEY_PASSWORD?"; exit 1; }
+        echo "Keystore, Passwort und Alias passen zusammen."
+
+    - name: Create build.json (Signatur-Konfiguration)
+      if: env.HAS_KEYSTORE == 'true'
+      env:
+        KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+        KS_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+      run: |
+        set -euo pipefail
+        cd app_build
+        # Werte kommen aus Umgebungsvariablen und werden von jq korrekt
+        # escaped - Sonderzeichen im Passwort koennen die Datei nicht mehr
+        # zerbrechen, und nichts davon steht im Klartext im Workflow.
+        jq -n \
+          --arg ks "$(pwd)/release.keystore" \
+          --arg sp "$KS_PASS" \
+          --arg al "$KS_ALIAS" \
+          --arg pw "$KEY_PASS" \
+          '{android:{release:{keystore:$ks, storePassword:$sp, alias:$al, password:$pw}}}' \
+          > build.json
+        chmod 600 build.json
+
+    - name: Build signed App Bundle (.aab) for Play Store
+      if: env.HAS_KEYSTORE == 'true'
+      run: |
+        set -euo pipefail
+        cd app_build
+        cordova build android --release --buildConfig=build.json -- --packageType=bundle
+        echo "--- versionCode/versionName des Builds ---"
+        grep -m1 -E "versionCode|versionName" platforms/android/app/build.gradle || true
+
+    - name: Build signed Release APK (for direct testing)
+      if: env.HAS_KEYSTORE == 'true'
+      run: |
+        set -euo pipefail
+        cd app_build
+        cordova build android --release --buildConfig=build.json -- --packageType=apk
+
+    - name: Remove signing config
+      if: always() && env.HAS_KEYSTORE == 'true'
+      run: rm -f app_build/build.json app_build/release.keystore
+
+    - name: Upload AAB (Play Store Upload)
+      if: env.HAS_KEYSTORE == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: TurnierPro-PlayStore-AAB
+        path: app_build/platforms/android/app/build/outputs/bundle/release/*.aab
+        # Fehlt die Datei, soll der Build rot werden. Vorher gab es nur eine
+        # Warnung - der Lauf war gruen, obwohl nichts herauskam.
+        if-no-files-found: error
+
+    - name: Upload Release APK (Direct Testing)
+      if: env.HAS_KEYSTORE == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: TurnierPro-Release-APK
+        path: app_build/platforms/android/app/build/outputs/apk/release/*.apk
+        # Fehlt die Datei, soll der Build rot werden. Vorher gab es nur eine
+        # Warnung - der Lauf war gruen, obwohl nichts herauskam.
+        if-no-files-found: error
