@@ -53,6 +53,9 @@
              gescrollt wird nur der Inhalt. -->
         <preference name="DisallowOverscroll" value="true" />
 
+        <!-- QR-Scanner: Kamerabild im Seiteninhalt statt Vollbild-Player -->
+        <preference name="AllowInlineMediaPlayback" value="true" />
+
         <!-- Hoch- und Querformat. "default" gibt dem iPad alle vier Lagen
              (Pflicht fuer Multitasking) und dem iPhone alle ausser Kopfueber.
              Das Layout ist auf Hochformat ausgelegt, funktioniert aber quer. -->
@@ -79,7 +82,7 @@
              l10n/ios/en.lproj/InfoPlist.strings und werden vom Workflow per
              tools/ios_localize.rb eingebunden. Platzhaltertexte weist Apple ab. -->
         <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="overwrite">
-            <string>TurnierPro nutzt die Kamera nur, wenn du für ein Team ein Wappen oder Mannschaftsfoto aufnimmst. Das Bild bleibt auf deinem Gerät.</string>
+            <string>TurnierPro nutzt die Kamera nur, wenn du ein Wappen oder Mannschaftsfoto aufnimmst oder den QR-Code eines Turniers scannst. Bilder bleiben auf deinem Gerät.</string>
         </edit-config>
         <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="overwrite">
             <string>TurnierPro übernimmt nur das Bild, das du für ein Wappen oder Mannschaftsfoto auswählst. Es bleibt auf deinem Gerät.</string>
