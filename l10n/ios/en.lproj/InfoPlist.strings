@@ -1,6 +1,6 @@
 /* Home screen name and permission prompts (English) */
 "CFBundleDisplayName" = "TourneyPro";
 "CFBundleName" = "TourneyPro";
-"NSCameraUsageDescription" = "TourneyPro only uses the camera when you take a crest or team photo for a team. The picture stays on your device.";
+"NSCameraUsageDescription" = "TourneyPro only uses the camera when you take a crest or team photo or scan a tournament QR code. Pictures stay on your device.";
 "NSPhotoLibraryUsageDescription" = "TourneyPro only takes the picture you choose as a crest or team photo. It stays on your device.";
 "NSPhotoLibraryAddUsageDescription" = "At your request, TourneyPro saves exported schedules and tables via the share menu.";
