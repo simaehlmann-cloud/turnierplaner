@@ -49,12 +49,40 @@ Arbeitstitel: **TurnierPro** (Deutsch) / **TourneyPro** (Englisch) – siehe „
 - **Sicherung** – alles inkl. Bilder als Datei exportieren/importieren (⚙︎). Erinnerung nach 30 Tagen.
 - **iPad** – Spielplan und Tabellen zweispaltig, alle Ausrichtungen.
 
+## Funktionen (Phase 2)
+
+- **Kinderfußball-Modus** – Champions-League-System über die Felder: Sieger rücken ein Feld hoch,
+  Verlierer eins runter (Feld 1 behält den Sieger, das letzte Feld den Verlierer). Rundenzahl frei
+  (auch während des Turniers änderbar). **Ungerade Teamzahl oder zu wenige Felder:** Teams pausieren
+  reihum, jedes gleich oft, und behalten ihren Platz auf der Leiter; pausierende Teams pfeifen (optional).
+  Unentschieden: Sieger festlegen (Schnick-Schnack-Schnuck, Neunmeter …) oder beide bleiben.
+  **Ergebnisse und Tabellen ausblendbar** – dann nur „wer hat gewonnen?“ und am Ende Teilnehmer-Urkunden.
+  Wird ein früheres Ergebnis geändert, werden die Folgerunden nach Rückfrage neu ausgelost.
+- **Spielereignisse** – im Ergebnis-Dialog Tore (mit Torschütze aus dem Kader, Elfmeter, Eigentor),
+  Gelb, Rot und Zeitstrafen (Dauer einstellbar, Countdown in der Uhr). Tore zählen automatisch zum
+  Spielstand, die Minute kommt aus der Turnieruhr. Daraus: **Torschützenliste** und **Fair-Play-Wertung**.
+- **Signaltöne zur Auswahl** (⚙︎): Schiri-Pfiff (Abpfiff „kurz – kurz – lang“), Hupe, Schiffshorn,
+  Stadion-Fanfare, Hallen-Sirene, Gong – alle im Gerät erzeugt – oder **eigene Audiodateien** je Signal.
+- **Urkunden** (Turnier ⋯ → Urkunden): Platzierung (bis Platz X), Teilnahme je Team oder **pro Kind**
+  (Namen aus dem Kader), optional mit Wappen und Mannschaftsfoto, als **PDF** (Drucken/AirPrint,
+  Teilen). **Vorlagen** unter ⚙︎ → Urkunden-Vorlagen: vier Designs (Klassisch, Kinder bunt, Schule
+  schlicht, **eigenes Hintergrundbild**), Farbe, Logo, Unterschriften, Ort und alle Texte mit
+  Platzhaltern (`{{TEAM}}`, `{{PLATZ}}`, `{{TURNIER}}`, `{{DATUM}}`, `{{SPIELER}}`, `{{VEREIN}}`, `{{ORT}}`).
+  **Word-Vorlage:** Beispiel herunterladen, in Word gestalten, hochladen – die App füllt sie aus
+  (eine Seite pro Urkunde) und gibt eine .docx zum Drucken aus Word/Pages zurück.
+- **Siegerehrung** – Plätze einzeln aufdecken (vom letzten bis zum ersten), Fanfare, Podest, Konfetti;
+  im Kindermodus ohne Platzierungen „Alle sind Sieger“.
+- **Beamer-Modus** – Vollbild für Zuschauer (iPad, AirPlay): Uhr, laufende Runde, wechselnd Tabellen,
+  Finalrunde, Torschützen und nächste Runde.
+- **Zeit-Assistent** – „Ende spätestens 12:00“: die App schlägt passende Modi mit Spieldauer vor.
+- **Teams aus Klassenliste** – Namen einfügen (optional Geschlecht und Stärke), ausgeglichene Teams
+  nach Stärke und gemischt; Spieler landen direkt im Kader (für Torschützen und Urkunden pro Kind).
+- **Spielzettel** als PDF (zwei Spiele pro A4-Seite): Ergebnis, Torschützen, Karten, Unterschrift.
+- **Turnier-Vorlagen** – Einstellungen und Teams speichern, bei „Neues Turnier“ wieder nutzen.
+- **Kader-Import** aus PitchPro und TacticBoard (Kader-Datei oder PitchPro-Sicherung).
+
 ## Geplant
 
-- **Phase 2:** Kinderfußball-Modus (DFB-Spielform / „Champions-League-System“ mit Auf- und Abstieg
-  über die Felder), Spielereignisse (Torschützen aus dem Kader, Karten, Zeitstrafen mit Countdown),
-  Torschützenliste und Fair-Play-Wertung, Urkunden als PDF (Platzierung und Teilnahme, mit
-  Mannschaftsfoto, Drucken per AirPrint über das Teilen-Menü), Turniervorlagen und Archiv-Statistik.
 - **Phase 3:** Turnier per Datei/QR an andere Geräte übergeben, Signal auch bei gesperrtem Bildschirm
   (lokale Benachrichtigung), Freemium mit In-App-Kauf (inkl. „Käufe wiederherstellen“), Play Store.
 
@@ -75,6 +103,10 @@ Die Workflows sind von PitchPro übernommen und angepasst (App-ID `de.turnierpro
   `KEYSTORE_PASSWORD`, `KEY_ALIAS` (= `turnierpro`), `KEY_PASSWORD` ein signiertes AAB.
   **Eigenen Keystore für TurnierPro anlegen** (Anleitung oben im Workflow).
 - Version in `config.xml` **und** `APP_VERSION` in `index.html` vor jedem Store-Update erhöhen.
+- **iOS-Lokalisierung:** gebaut wird mit `cordova compile` (nicht `build`), weil `build` vorher erneut
+  „prepare“ ausführt und dabei die eingebundenen Sprachordner wieder entfernt. Scheitert der Build mit
+  Lokalisierung trotzdem, stehen die Xcode-Fehler als Meldungen am Lauf und es wird ohne sie gebaut.
+- Eingebettete Bibliothek: `fflate` 0.8.2 (MIT) für Word-Vorlagen; PDFs erzeugt die App selbst.
 - Plugins nur in den Workflows: `cordova-plugin-x-socialsharing` (iOS, Teilen), `cordova-plugin-statusbar`,
   `cordova-plugin-insomnia` (Bildschirm an, solange die Uhr läuft); Android: `plugins/cordova-plugin-tb-share`.
 - **iOS-Berechtigungen:** Kamera (`NSCameraUsageDescription`) und Fotos (`NSPhotoLibraryUsageDescription`)
@@ -100,7 +132,7 @@ und ist im Finder/Explorer oft unsichtbar. Ohne ihn gibt es keine Builds.
 ## Tests
 
 ```
-node tests/engine.test.js   # Spielplan, Auslosung, Tabellen, K.-o., Zeiten, Schiedsrichter (19 Tests)
+node tests/engine.test.js   # Spielplan, Auslosung, Tabellen, K.-o., Kindermodus, Statistik (26 Tests)
 node tests/i18n.test.js     # alle Texte in Deutsch und Englisch vorhanden
 ```
 
