@@ -252,4 +252,99 @@ test('Gruppenphase: moeglichst keine Spiele direkt hintereinander', () => {
   console.log('      (direkt hintereinander bei 10 Teams/2 Feldern: ' + b2b + ' von ' + t.matches.filter(m => m.ph === 'g').length * 2 + ' Einsaetzen)');
   assert.ok(b2b <= 6);
 });
+
+/* ---------------- Kindermodus ---------------- */
+function mkKids(k, cfg){
+  const t = { cfg: Object.assign({}, CFG, { mode: 'kids', kRounds: 6, kDraw: 'dec', fields: 99, seed: 'fair' }, cfg), teams: mkTeams(k), groups: [], seeds: [], matches: [] };
+  const d = Engine.draw(t.teams, t.cfg); t.groups = d.groups; t.seeds = d.seeds;
+  assert.ok(!Engine.validate(t));
+  Engine.build(t); return t;
+}
+// Sieger ist immer das Team mit der kleineren Nummer (= staerker)
+function kidsPlay(t, decide){
+  for(let i = 0; i < 100; i++){
+    const open = t.matches.filter(m => !m.res);
+    if(!open.length) break;
+    open.forEach(m => { m.res = decide ? decide(m) : (+m.h.slice(1) < +m.a.slice(1) ? { h: 1, a: 0 } : { h: 0, a: 1 }); });
+    Engine.kidsSync(t);
+  }
+  return Engine.analyze(t);
+}
+test('Kindermodus: Sieger steigt auf, Verlierer ab (8 Teams, 4 Felder)', () => {
+  const t = mkKids(8, { seed: 'manual' });
+  // Startreihenfolge manuell: T1..T8 -> Feld 1: T1-T2, Feld 2: T3-T4 ...
+  t.seeds = ['T8', 'T7', 'T6', 'T5', 'T4', 'T3', 'T2', 'T1'];
+  Engine.build(t);
+  assert.deepStrictEqual(t.matches.map(m => m.f + ':' + m.h + '-' + m.a), ['0:T8-T7', '1:T6-T5', '2:T4-T3', '3:T2-T1']);
+  t.matches.forEach(m => { m.res = { h: 0, a: 1 }; }); // jeweils das zweite (staerkere) Team gewinnt
+  Engine.kidsSync(t);
+  const r2 = t.matches.filter(m => m.rd === 2).map(m => m.f + ':' + [m.h, m.a].sort().join('-'));
+  // Feld1: T7 (bleibt) + T5 (hoch); Feld2: T8 (runter) + T3 (hoch); Feld3: T6 + T1; Feld4: T4 + T2
+  assert.deepStrictEqual(r2, ['0:T5-T7', '1:T3-T8', '2:T1-T6', '3:T2-T4']);
+  const A = kidsPlay(t);
+  assert.ok(A.rankDone);
+  assert.strictEqual(t.kids.rounds.length, 6);
+  // nach genug Runden steht das staerkste Team oben
+  assert.strictEqual(A.rank[0].id, 'T1');
+});
+test('Kindermodus: ungerade Zahl -> Pause reihum, jeder gleich oft', () => {
+  const t = mkKids(7, { kRounds: 7 });
+  kidsPlay(t);
+  const cnt = {};
+  t.kids.rounds.forEach(r => { assert.strictEqual(r.rest.length, 1); r.rest.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }); });
+  assert.strictEqual(Object.keys(cnt).length, 7, 'jedes Team pausiert einmal');
+  Object.values(cnt).forEach(v => assert.strictEqual(v, 1));
+  t.kids.rounds.forEach((r, ri) => {
+    const ms = t.matches.filter(m => m.rd === ri + 1);
+    assert.strictEqual(ms.length, 3);
+    ms.forEach(m => { assert.ok(r.rest.indexOf(m.h) === -1 && r.rest.indexOf(m.a) === -1); });
+  });
+});
+test('Kindermodus: weniger Felder als Paarungen (10 Teams, 3 Felder)', () => {
+  const t = mkKids(10, { kRounds: 10, fields: 3 });
+  kidsPlay(t);
+  const cnt = {};
+  t.kids.rounds.forEach(r => { assert.strictEqual(r.rest.length, 4); r.rest.forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }); });
+  const v = Object.values(cnt);
+  assert.strictEqual(v.length, 10); assert.ok(Math.max(...v) - Math.min(...v) <= 1, 'Pausen gleichmaessig: ' + v);
+});
+test('Kindermodus: Unentschieden "beide bleiben"', () => {
+  const t = mkKids(6, { kDraw: 'stay', seed: 'manual' });
+  t.seeds = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']; Engine.build(t);
+  t.matches.forEach(m => { m.res = { h: 1, a: 1 }; });
+  Engine.kidsSync(t);
+  const r2 = t.matches.filter(m => m.rd === 2).map(m => m.h + '-' + m.a);
+  assert.deepStrictEqual(r2, ['T1-T2', 'T3-T4', 'T5-T6']);
+});
+test('Kindermodus: Ergebnis frueherer Runde geaendert -> Folgerunden neu', () => {
+  const t = mkKids(6, { kRounds: 4 });
+  kidsPlay(t);
+  assert.strictEqual(t.kids.rounds.length, 4);
+  const m1 = t.matches.find(m => m.rd === 1);
+  m1.res = { h: m1.res.a, a: m1.res.h };  // Ergebnis drehen
+  const lost = Engine.kidsSync(t);
+  assert.ok(lost > 0, 'Folgeergebnisse verworfen');
+  assert.strictEqual(t.kids.rounds.length, 2, 'Runde 2 neu, danach wartet es');
+  assert.ok(t.matches.filter(m => m.rd === 2).every(m => !m.res));
+});
+test('Kindermodus: Team faellt aus', () => {
+  const t = mkKids(6, { kRounds: 4 });
+  t.matches.forEach(m => { m.res = { h: 1, a: 0 }; });
+  t.teams.find(x => x.id === t.matches[0].h).act = false;
+  Engine.kidsSync(t);
+  const r2 = t.kids.rounds[1];
+  assert.strictEqual(r2.lad.length, 5); assert.strictEqual(r2.rest.length, 1);
+});
+test('Schnell-Ergebnis und Statistik', () => {
+  const t = mkKids(4, { kRounds: 1 });
+  const m = t.matches[0];
+  m.res = { kw: 'a' };
+  m.ev = [{ id: 'e1', k: 'goal', s: 'h', n: 'Max' }, { id: 'e2', k: 'pen', s: 'h', n: 'Max' }, { id: 'e3', k: 'y', s: 'a' }, { id: 'e4', k: 'r', s: 'a' }];
+  const A = Engine.analyze(t);
+  assert.strictEqual(A.out[m.id].win, 'a');
+  assert.strictEqual(A.stats.scorers[0].n, 'Max'); assert.strictEqual(A.stats.scorers[0].goals, 2); assert.strictEqual(A.stats.scorers[0].pens, 1);
+  const fpA = A.stats.fair.find(x => x.id === m.a);
+  assert.strictEqual(fpA.pts, 4);
+  assert.strictEqual(A.stats.fair[A.stats.fair.length - 1].id, m.a);
+});
 console.log('\n' + tests + ' Tests bestanden.');
