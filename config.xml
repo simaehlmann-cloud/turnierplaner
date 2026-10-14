@@ -5,7 +5,7 @@
          Android: values-en/strings.xml). Bei einer Umbenennung alle drei Stellen
          sowie APP_NAME in index.html, manifest.json und den Workflows anpassen. -->
     <name>TurnierPro</name>
-    <description>Turniere für Verein und Sportunterricht planen – Spielplan, Felder, Zeiten, Ergebnisse und Tabellen, komplett offline</description>
+    <description>Turniere für Verein und Sportunterricht planen – Spielplan, Felder, Zeiten, Ergebnisse und Tabellen, auch Kinderfußball im Champions-League-System, komplett offline</description>
     <author email="smaehlmann.appdev@gmail.com">Simon Mählmann</author>
     <content src="index.html" />
     <access origin="*" />

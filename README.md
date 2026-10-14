@@ -46,6 +46,7 @@ Arbeitstitel: **TurnierPro** (Deutsch) / **TourneyPro** (Englisch) – siehe „
   (WhatsApp & Co.); Spielplan oder Tabellen als **Bild** (1080 px, zum Teilen, Sichern, Drucken).
 - **Team-Filter** im Spielplan – nur die Spiele und Schiri-Einsätze eines Teams (für Trainer/Eltern).
 - **Turnier abschließen** (Archiv, Namen bleiben wie am Turniertag), **als Vorlage kopieren**, löschen.
+  Auf der Startseite: Turnier **lange drücken** → Öffnen, Kopieren, Weitergeben, Löschen (auch ⋯ im Entwurf).
 - **Sicherung** – alles inkl. Bilder als Datei exportieren/importieren (⚙︎). Erinnerung nach 30 Tagen.
 - **iPad** – Spielplan und Tabellen zweispaltig, alle Ausrichtungen.
 

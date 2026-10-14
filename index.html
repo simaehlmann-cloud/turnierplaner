@@ -110,6 +110,8 @@ label.lb { display:block; font-size:13px; font-weight:700; color:var(--muted); m
 .list-row { display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line);
   border-radius:var(--r); padding:12px 14px; margin-bottom:8px; width:100%; text-align:left; }
 .list-row:active { background:var(--surface2); }
+.list-row[data-act="openTour"] { -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+.list-row.lp { background:var(--surface2); transform:scale(.98); transition:transform .15s; }
 .list-row .main { flex:1; min-width:0; }
 .list-row .t1 { font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .list-row .t2 { font-size:13px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -377,7 +379,7 @@ const I18N = {
     remove: 'Entfernen', change: 'Ändern', choose: 'Auswählen', take: 'Übernehmen', optional: 'optional', later: 'Später', more: 'Mehr',
     continueBtn: 'Fortfahren', settings: 'Einstellungen', share: 'Teilen', version: 'Version',
     heroTitle: 'Turnier planen',
-    heroText: 'Spielplan mit Feldern, Zeiten und Schiedsrichtern in Sekunden – für Verein, Schule und Sportunterricht. Komplett offline.',
+    heroText: 'Spielplan mit Feldern, Zeiten und Schiedsrichtern in Sekunden – für Verein, Schule, Sportunterricht und Kinderfußball. Komplett offline.',
     newTour: 'Neues Turnier', myTeams: 'Meine Teams', openTours: 'Turniere', doneTours: 'Abgeschlossen', draft: 'Entwurf',
     noTours: 'Noch kein Turnier. Lege oben ein neues an – Teams kannst du vorher unter „Meine Teams“ speichern oder im Turnier schnell erzeugen.',
     nTeams: n => n === 1 ? '1 Team' : n + ' Teams', nPlayers: n => n === 1 ? '1 Spieler' : n + ' Spieler', nPlayed: n => n + ' Sp.',
@@ -503,6 +505,7 @@ const I18N = {
     // Menue, Teilen
     finishTour: 'Turnier abschließen', finishHint: 'Kommt ins Archiv; Namen bleiben wie heute', reopen: 'Wieder öffnen',
     finishedToast: 'Turnier abgeschlossen.', reopenedToast: 'Turnier wieder geöffnet.',
+    longPressHint: 'Tipp: Turnier lange drücken für Kopieren, Weitergeben oder Löschen.', moreOptions: 'Weitere Optionen', lpOpen: 'Öffnen',
     dupTour: 'Als Vorlage kopieren', dupHint: 'Gleiche Einstellungen und Teams, neuer Spielplan', copySuffix: '(Kopie)', duplicated: 'Kopie angelegt – Einstellungen prüfen und auslosen.',
     shareHint: 'Text für WhatsApp & Co. oder Bild', shStatus: 'Aktueller Stand', shStatusHint: 'Tabellen, Finalrunde, nächste Spiele',
     shPlan: 'Kompletter Spielplan', shPlanHint: 'Alle Runden mit Zeiten und Ergebnissen', shNext: 'Nächste Runde', shNextHint: 'Felder, Paarungen, Schiedsrichter',
@@ -597,7 +600,7 @@ const I18N = {
     remove: 'Remove', change: 'Change', choose: 'Choose', take: 'Apply', optional: 'optional', later: 'Later', more: 'More',
     continueBtn: 'Continue', settings: 'Settings', share: 'Share', version: 'Version',
     heroTitle: 'Plan a tournament',
-    heroText: 'A schedule with pitches, times and referees in seconds – for clubs, schools and PE lessons. Fully offline.',
+    heroText: 'A schedule with pitches, times and referees in seconds – for clubs, schools, PE lessons and kids football. Fully offline.',
     newTour: 'New tournament', myTeams: 'My teams', openTours: 'Tournaments', doneTours: 'Finished', draft: 'Draft',
     noTours: 'No tournament yet. Create one above – save teams under “My teams” first or create numbered teams quickly inside the tournament.',
     nTeams: n => n === 1 ? '1 team' : n + ' teams', nPlayers: n => n === 1 ? '1 player' : n + ' players', nPlayed: n => n + ' pl.',
@@ -717,6 +720,7 @@ const I18N = {
     lateText: d => 'You are ' + d + ' min behind schedule.', lateBtn: d => 'Shift schedule from this round by ' + d + ' min', shifted: d => 'Schedule shifted by ' + d + ' min.',
     finishTour: 'Finish tournament', finishHint: 'Moves to the archive; names stay as they are today', reopen: 'Reopen',
     finishedToast: 'Tournament finished.', reopenedToast: 'Tournament reopened.',
+    longPressHint: 'Tip: long-press a tournament to copy, pass on or delete it.', moreOptions: 'More options', lpOpen: 'Open',
     dupTour: 'Copy as template', dupHint: 'Same settings and teams, new schedule', copySuffix: '(copy)', duplicated: 'Copy created – check the settings and draw.',
     shareHint: 'Text for WhatsApp & co. or a picture', shStatus: 'Current standings', shStatusHint: 'Tables, knockout stage, next matches',
     shPlan: 'Full schedule', shPlanHint: 'All rounds with times and results', shNext: 'Next round', shNextHint: 'Pitches, pairings, referees',
@@ -2158,6 +2162,7 @@ function viewHome(){
   if(open.length) h += sec(t.openTours) + open.map(tourRow).join('');
   if(done.length) h += sec(t.doneTours) + done.map(tourRow).join('');
   if(!tours.length) h += '<div class="empty" style="margin-top:14px">' + esc(t.noTours) + '</div>';
+  else h += '<div class="hint" style="text-align:center;margin-top:4px">' + esc(t.longPressHint) + '</div>';
   return h;
 }
 function tourRow(x){
@@ -2248,7 +2253,7 @@ const STEP_LIMITS = { kRounds: [1, 40, 1], tpMin: [1, 10, 1], fields: [1, 16, 1]
 function viewSetup(r){
   const t = T(), x = tourById(r.id), c = x.cfg;
   const lock = built(x);
-  setTop(lock ? t.settingsTour : t.newTourTitle, lock ? null : { label: '✓', act: 'toDraw', aria: t.toDraw });
+  setTop(lock ? t.settingsTour : t.newTourTitle, lock ? null : { label: '✓', act: 'toDraw', aria: t.toDraw }, lock ? null : { label: '⋯', act: 'draftMenu', aria: t.moreOptions });
   const active = x.teams.filter(e => e.act);
   const min = ' ' + t.minShort;
   let h = '';
@@ -2681,6 +2686,8 @@ function commit(x, mutate, after){
   else run();
 }
 const curTour = () => tourById(cur().id);
+/* Turnier aus data-id des Knopfs (Langdruck-Menue), sonst das geoeffnete */
+const tourArg = el => (el && el.dataset && el.dataset.id) ? tourById(el.dataset.id) : curTour();
 
 /* ----- Ergebnis-Blatt ----- */
 const kidsQuick = x => x.cfg.mode === 'kids' && x.cfg.kHide;
@@ -3493,16 +3500,18 @@ const A = {
       save(); render(true);
     });
   },
-  delTour(){
-    const t = T(), x = curTour();
+  delTour(el){
+    const t = T(), x = tourArg(el);
+    if(!x) return;
     askConfirm(t.delTourQ(x.name), t.delTourText, t.del, () => {
       if(x.clock && x.clock.since) clockChanged(null);
       DB.tours = DB.tours.filter(y => y.id !== x.id); save();
       STACK = [{ v: 'home' }]; render(true);
     });
   },
-  dupTour(){
-    const x = curTour(), t = T();
+  dupTour(el){
+    const x = tourArg(el), t = T();
+    if(!x) return;
     const y = newTourObj();
     y.name = (x.name + ' ' + t.copySuffix).slice(0, 60); y.cfg = cleanCfg(JSON.parse(JSON.stringify(x.cfg)));
     y.teams = x.teams.map(e => Object.assign({}, e, { act: true, name: tname(x, e.id), ref: e.ref && !!teamById(e.id) }));
@@ -3518,6 +3527,18 @@ const A = {
     save(); closeSheet(); render(false);
     toast(x.done ? T().finishedToast : T().reopenedToast);
   },
+  /* Langes Druecken auf ein Turnier (Startseite) und ⋯ im Entwurf */
+  tourLong(el){
+    const t = T(), x = tourById(el.dataset.id);
+    if(!x) return;
+    const d = ' data-id="' + x.id + '"', here = cur().id === x.id;
+    openSheet(x.name, fmtDate(x.date) + ' · ' + (built(x) ? modeName(x.cfg.mode) : t.draft),
+      (here ? '' : act('openTour', '▶', t.lpOpen, '', d)) +
+      act('dupTour', '⧉', t.dupTour, t.dupHint, d) +
+      (built(x) ? act('handover', '📤', t.handover, t.handoverShort, d) : '') +
+      act('delTour', '🗑', t.delTour, '', d));
+  },
+  draftMenu(){ A.tourLong({ dataset: { id: cur().id } }); },
   tourMenu(){
     const t = T(), x = curTour();
     openSheet(x.name, fmtDate(x.date) + ' · ' + modeName(x.cfg.mode),
@@ -4709,22 +4730,26 @@ function paywallBody(feature){
 
 Object.assign(A, {
   /* Weitergeben */
-  handover(){
+  handover(el){
     if(needPro('share')) return;
-    const t = T();
+    const t = T(), x = tourArg(el);
+    if(!x) return;
+    const d = ' data-id="' + x.id + '"';
     closeSheet();
-    openSheet(t.handover, t.handoverHint, act('handFile', '📄', t.handFile, t.handFileHint) + act('handQr', '🔳', t.handQr, t.handQrHint));
+    openSheet(t.handover, t.handoverHint, act('handFile', '📄', t.handFile, t.handFileHint, d) + act('handQr', '🔳', t.handQr, t.handQrHint, d));
   },
-  async handFile(){
-    const x = curTour(), t = T();
+  async handFile(el){
+    const x = tourArg(el), t = T();
+    if(!x) return;
     closeSheet();
     try {
       const r = await saveBlob(new Blob([JSON.stringify(tourPacket(x, true))], { type: 'application/json' }), fileName(t.tourFile + '_' + x.name), 'application/json', true);
       if(r !== 'abbruch') toast(t.tourFileDone);
     } catch(e){ toast(t.exportFailed); }
   },
-  handQr(){
-    const x = curTour(), t = T();
+  handQr(el){
+    const x = tourArg(el), t = T();
+    if(!x) return;
     stopQrShow();
     QRSHOW = { parts: qrParts(x), i: 0, timer: null };
     openSheet(t.handQr, t.qrHint(QRSHOW.parts.length), '<div id="qr-box"></div>' +
@@ -4788,6 +4813,7 @@ Object.assign(A, {
 let dragEndedAt = 0;
 document.addEventListener('click', e => {
   if(DRAG || Date.now() - dragEndedAt < 350) return;
+  if(lpSuppress){ lpSuppress = false; e.preventDefault(); return; }   // Klick nach langem Druecken schlucken
   const el = e.target.closest('[data-act]');
   if(el){
     const f = A[el.dataset.act];
@@ -4803,6 +4829,33 @@ document.addEventListener('click', e => {
     else { swapTeams(x, DSEL, id); DSEL = null; vibrate(20); }
     render(false);
   }
+});
+/* Langes Druecken auf ein Turnier in der Liste -> Menue (Oeffnen, Kopieren, Weitergeben, Loeschen) */
+let LP = null, lpSuppress = false;
+function lpCancel(){ if(LP){ clearTimeout(LP.t); LP.row.classList.remove('lp'); LP = null; } }
+function lpFire(row){
+  lpCancel();
+  if(lpSuppress || sheetOpen() || !row.isConnected) return;
+  lpSuppress = true; vibrate(25);
+  A.tourLong(row);
+}
+document.addEventListener('pointerdown', e => {
+  lpSuppress = false; lpCancel();
+  if(e.button > 0) return;
+  const row = e.target.closest('.list-row[data-act="openTour"]');
+  if(!row) return;
+  row.classList.add('lp');
+  LP = { row, x: e.clientX, y: e.clientY, t: setTimeout(() => lpFire(row), 550) };
+});
+document.addEventListener('pointermove', e => { if(LP && Math.hypot(e.clientX - LP.x, e.clientY - LP.y) > 10) lpCancel(); });
+document.addEventListener('pointerup', lpCancel);
+document.addEventListener('pointercancel', lpCancel);
+$('view').addEventListener('scroll', lpCancel, { passive: true });
+document.addEventListener('contextmenu', e => {   // Android-Langdruck / Rechtsklick am Computer
+  const row = e.target.closest('.list-row[data-act="openTour"]');
+  if(!row) return;
+  e.preventDefault();
+  if(!lpSuppress) lpFire(row);
 });
 /* Ziehen am Griff ⠿ (Maus und Finger) */
 document.addEventListener('pointerdown', e => {
