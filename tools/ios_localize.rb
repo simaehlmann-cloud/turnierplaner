@@ -15,6 +15,8 @@ require 'xcodeproj'
 ios_dir, l10n_dir = ARGV
 abort 'Aufruf: ios_localize.rb <platforms/ios> <l10n/ios>' unless ios_dir && l10n_dir
 
+ios_dir = File.expand_path(ios_dir)
+l10n_dir = File.expand_path(l10n_dir)
 proj_path = Dir.glob(File.join(ios_dir, '*.xcodeproj')).reject { |p| p.include?('Pods') }.first
 abort "Kein Xcode-Projekt in #{ios_dir}" unless proj_path
 project = Xcodeproj::Project.open(proj_path)
@@ -42,10 +44,10 @@ langs.each do |lang|
   dest = File.join(ios_dir, res_rel, "#{lang}.lproj")
   FileUtils.mkdir_p(dest)
   FileUtils.cp(File.join(l10n_dir, "#{lang}.lproj", 'InfoPlist.strings'), dest)
-  ref = vg.new_reference(File.join(res_rel, "#{lang}.lproj", 'InfoPlist.strings'))
+  ref = vg.new_reference(File.expand_path(File.join(ios_dir, res_rel, "#{lang}.lproj", 'InfoPlist.strings')))
   ref.name = lang
   ref.last_known_file_type = 'text.plist.strings'
-  puts "  + #{lang}.lproj/InfoPlist.strings"
+  puts "  + #{lang}.lproj/InfoPlist.strings -> #{ref.path}"
 end
 target.resources_build_phase.add_file_reference(vg, true)
 
