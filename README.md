@@ -92,9 +92,12 @@ Arbeitstitel: **TurnierPro** (Deutsch) / **TourneyPro** (Englisch) – siehe „
 - **Signal bei gesperrtem Bildschirm:** Läuft die Turnieruhr, plant die App lokale Benachrichtigungen
   für „noch 1 Minute“ und „Abpfiff“ (Plugin `cordova-plugin-local-notification`). Pause, Reset und
   Korrekturen planen sie neu.
-- **Freemium / In-App-Kauf** (`cordova-plugin-purchase`): Basis-Version bis 6 Teams; **Pro** (Einmalkauf
-  `de.turnierpro.app.pro`): unbegrenzte Teams, Kinderfußball, Urkunden, Weitergeben, alle Signaltöne,
-  Beamer-Modus. Mit „Käufe wiederherstellen“ (Pflicht bei Apple).
+- **Freemium / In-App-Kauf** (`cordova-plugin-purchase`): **Ein Turnier gratis** mit allen Funktionen –
+  es zählt das erste Turnier, für das ein Spielplan erstellt wird (Entwürfe zählen nicht, Löschen gibt es
+  nicht frei). Danach braucht jedes weitere Turnier **Pro** (Einmalkauf `de.turnierpro.app.pro`): unbegrenzt
+  viele Turniere, Kinderfußball, Urkunden, Weitergeben, alle Signaltöne, Beamer-Modus. Mit „Käufe
+  wiederherstellen“ (Pflicht bei Apple). Das verbrauchte Gratis-Turnier steht zusätzlich im iOS-Schlüsselbund
+  (eigenes Plugin `plugins/cordova-plugin-tp-mark`) und bleibt so nach einer Neuinstallation erhalten.
   **Schalter:** `const FREEMIUM = false;` in `index.html` – für TestFlight ist alles frei. Vor der
   Veröffentlichung auf `true` setzen und in App Store Connect das In-App-Produkt anlegen (siehe unten).
 - **Neues App-Icon:** Turnierbaum mit Pokal und Ball auf Rasen; daraus werden alle Größen erzeugt.
@@ -146,7 +149,8 @@ Die Workflows sind von PitchPro übernommen und angepasst (App-ID `de.turnierpro
   Lokalisierung trotzdem, stehen die Xcode-Fehler als Meldungen am Lauf und es wird ohne sie gebaut.
 - Plugins nur in den Workflows: `cordova-plugin-x-socialsharing` (iOS, Teilen), `cordova-plugin-statusbar`,
   `cordova-plugin-insomnia` (Bildschirm an), `cordova-plugin-local-notification` (Signal bei gesperrtem
-  Bildschirm), `cordova-plugin-purchase` (Pro-Kauf); Android zusätzlich `plugins/cordova-plugin-tb-share`.
+  Bildschirm), `cordova-plugin-purchase` (Pro-Kauf); iOS zusätzlich `plugins/cordova-plugin-tp-mark` (Schlüsselbund),
+  Android zusätzlich `plugins/cordova-plugin-tb-share`.
 - Eingebettete Bibliotheken: `fflate` 0.8.2 (MIT), `qrcode-generator` 1.4.4 (MIT), `jsQR` 1.4.0 (Apache-2.0).
 - **iOS-Berechtigungen:** Kamera (`NSCameraUsageDescription`) und Fotos (`NSPhotoLibraryUsageDescription`)
   für Wappen/Mannschaftsfoto; der Workflow bricht ab, wenn ein Text fehlt.

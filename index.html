@@ -589,9 +589,10 @@ const I18N = {
     scanNoCam: 'Kamera nicht verfügbar – bitte die Codes einzeln fotografieren.', scanProgress: (g, n) => g + ' von ' + n + ' Codes erfasst', scanNoCode: 'Auf dem Foto wurde kein Turnier-Code gefunden.',
     lnWarn: w => w + ': noch 1 Minute', lnEnd: w => w + ': Zeit abgelaufen – Abpfiff!',
     proTitle: 'TurnierPro Pro', proShort: 'alle Funktionen freischalten', proActive: 'Pro ist freigeschaltet – danke!', proIncludes: 'Pro enthält',
-    proList: ['Unbegrenzt viele Teams (Basis: bis 6)', 'Kinderfußball-Modus', 'Urkunden als PDF und Word – mit Fotos', 'Turnier per Datei und QR weitergeben', 'Alle Signaltöne inkl. eigener Töne', 'Beamer-Modus'],
+    proList: ['Unbegrenzt viele Turniere', 'Kinderfußball-Modus', 'Urkunden als PDF und Word – mit Fotos', 'Turnier per Datei und QR weitergeben', 'Alle Signaltöne inkl. eigener Töne', 'Beamer-Modus'],
+    proFreeHint: 'Dein erstes Turnier ist gratis – mit allen Funktionen',
     proBuy: p => 'Pro freischalten' + (p ? ' – ' + p : ''), proRestore: 'Käufe wiederherstellen', proOnce: 'Einmalkauf, kein Abo. Gilt für alle deine Geräte mit derselben Apple-ID.',
-    proWhy_teams: 'In der Basis-Version sind bis zu 6 Teams pro Turnier möglich.', proWhy_kids: 'Der Kinderfußball-Modus gehört zu Pro.', proWhy_certs: 'Urkunden gehören zu Pro.',
+    proWhy_more: 'Dein Gratis-Turnier hast du schon genutzt. Mit Pro legst du beliebig viele Turniere an – mit allen Funktionen.', proWhy_kids: 'Der Kinderfußball-Modus gehört zu Pro.', proWhy_certs: 'Urkunden gehören zu Pro.',
     proWhy_share: 'Turniere weitergeben gehört zu Pro.', proWhy_beamer: 'Der Beamer-Modus gehört zu Pro.', proWhy_sounds: 'Zusätzliche Signaltöne gehören zu Pro.',
     proThanks: 'Pro ist freigeschaltet – danke!', proNoStore: 'Der App Store ist gerade nicht erreichbar.', proFailed: 'Kauf nicht abgeschlossen.', proRestored: 'Pro wiederhergestellt.', proNothing: 'Kein früherer Kauf gefunden.'
   },
@@ -804,9 +805,10 @@ const I18N = {
     scanNoCam: 'Camera not available – please photograph the codes one by one.', scanProgress: (g, n) => g + ' of ' + n + ' codes captured', scanNoCode: 'No tournament code found in the photo.',
     lnWarn: w => w + ': 1 minute left', lnEnd: w => w + ': time is up – final whistle!',
     proTitle: 'TourneyPro Pro', proShort: 'unlock all features', proActive: 'Pro is unlocked – thank you!', proIncludes: 'Pro includes',
-    proList: ['Unlimited teams (basic: up to 6)', 'Kids football mode', 'Certificates as PDF and Word – with photos', 'Pass on tournaments via file and QR', 'All signal sounds incl. your own', 'Projector mode'],
+    proList: ['Unlimited tournaments', 'Kids football mode', 'Certificates as PDF and Word – with photos', 'Pass on tournaments via file and QR', 'All signal sounds incl. your own', 'Projector mode'],
+    proFreeHint: 'Your first tournament is free – with all features',
     proBuy: p => 'Unlock Pro' + (p ? ' – ' + p : ''), proRestore: 'Restore purchases', proOnce: 'One-time purchase, no subscription. Valid on all your devices with the same Apple ID.',
-    proWhy_teams: 'The basic version allows up to 6 teams per tournament.', proWhy_kids: 'Kids football mode is part of Pro.', proWhy_certs: 'Certificates are part of Pro.',
+    proWhy_more: 'You have already used your free tournament. With Pro you can create as many tournaments as you like – with all features.', proWhy_kids: 'Kids football mode is part of Pro.', proWhy_certs: 'Certificates are part of Pro.',
     proWhy_share: 'Passing on tournaments is part of Pro.', proWhy_beamer: 'Projector mode is part of Pro.', proWhy_sounds: 'Additional signal sounds are part of Pro.',
     proThanks: 'Pro is unlocked – thank you!', proNoStore: 'The App Store cannot be reached right now.', proFailed: 'Purchase not completed.', proRestored: 'Pro restored.', proNothing: 'No previous purchase found.'
   }
@@ -1023,7 +1025,7 @@ function cleanTpl(x){
 function load(){
   let raw = null;
   try { raw = JSON.parse(localStorage.getItem(DATA_KEY) || 'null'); } catch(e){ raw = null; }
-  const d = { v: 1, teams: [], tours: [], lastCfg: null, lastBackupAt: 0, backupSnooze: 0, prefs: cleanPrefs(null), tpls: [] };
+  const d = { v: 1, teams: [], tours: [], lastCfg: null, lastBackupAt: 0, backupSnooze: 0, prefs: cleanPrefs(null), tpls: [], freeId: '' };
   if(!raw || typeof raw !== 'object') return d;
   d.teams = (Array.isArray(raw.teams) ? raw.teams : []).map(cleanTeam).filter(Boolean);
   d.tours = (Array.isArray(raw.tours) ? raw.tours : []).map(cleanTour).filter(Boolean);
@@ -1032,6 +1034,7 @@ function load(){
   d.backupSnooze = num(raw.backupSnooze, 0, 9e15, 0);
   d.prefs = cleanPrefs(raw.prefs);
   d.pro = raw.pro === true;
+  d.freeId = cleanId(raw.freeId) || '';
   d.tpls = (Array.isArray(raw.tpls) ? raw.tpls : []).slice(0, 50).map(cleanTpl).filter(Boolean);
   return d;
 }
@@ -2969,7 +2972,7 @@ function playCustom(kind){
   return true;
 }
 function signal(kind, set){
-  set = set || (isPro() ? DB.prefs.snd : 'horn');
+  set = set || (fullNow() ? DB.prefs.snd : 'horn');
   try {
     unlockAudio();
     if(!audioCtx) return;
@@ -3173,7 +3176,7 @@ function imageBlocks(x, kind){
    SICHERUNG
    ===================================================================== */
 async function backupExport(){
-  const data = { app: 'turnierpro', v: 1, at: new Date().toISOString(), teams: DB.teams, tours: DB.tours, images: Object.assign({}, IMG) };
+  const data = { app: 'turnierpro', v: 1, at: new Date().toISOString(), teams: DB.teams, tours: DB.tours, images: Object.assign({}, IMG), freeId: DB.freeId || undefined };
   try {
     const r = await saveBlob(new Blob([JSON.stringify(data)], { type: 'application/json' }), fileName('TurnierPro_Sicherung'), 'application/json');
     if(r === 'abbruch') return;
@@ -3195,6 +3198,8 @@ function backupImport(data){
       if(typeof v === 'string' && (okImg || okOther) && v.length < 9e6 && !IMG[k]) setImg(k, v);
     });
   }
+  if(!DB.freeId && cleanId(data.freeId)){ DB.freeId = cleanId(data.freeId); markSet(DB.freeId); }
+  ensureFree();
   save(); render(false); toast(t.imported(nt, nr));
 }
 
@@ -3219,9 +3224,11 @@ function drawFits(x){
 }
 function doDraw(x){ const d = Engine.draw(x.teams, x.cfg); x.groups = d.groups; x.seeds = d.seeds; DSEL = null; }
 function buildNow(x){
+  if(needPro('more', x)) return false;
   const err = Engine.validate(x);
   if(err){ toast(errText(err)); return false; }
   Engine.build(x);
+  claimFree(x);
   DB.lastCfg = JSON.parse(JSON.stringify(x.cfg));
   save();
   STACK = [{ v: 'home' }, { v: 'tour', id: x.id, tab: 'plan' }];
@@ -3312,7 +3319,7 @@ const A = {
       '<button class="chip' + (THEME === 'light' ? ' on' : '') + '" data-act="theme" data-v="light">☀︎ ' + esc(t.themeLight) + '</button></div>' +
       act('backupExport', '💾', t.backupExport, t.backupExportHint) + act('backupImport', '📥', t.backupImport, t.backupImportHint) +
       '<div class="card" style="margin-bottom:8px">' + soundSettingsHtml() + '</div>' +
-      (FREEMIUM ? (isPro() ? '<div class="card" style="margin-bottom:8px">⭐ <b>' + esc(t.proActive) + '</b></div>' : act('paywall', '⭐', t.proTitle, t.proShort)) + act('proRestore', '↺', t.proRestore, '') : '') +
+      (FREEMIUM ? (isPro() ? '<div class="card" style="margin-bottom:8px">⭐ <b>' + esc(t.proActive) + '</b></div>' : act('paywall', '⭐', t.proTitle, DB.freeId ? t.proShort : t.proFreeHint)) + act('proRestore', '↺', t.proRestore, '') : '') +
       act('goCertCfg', '🏅', t.certSettings, t.certSettingsShort) + act('tplManage', '📋', t.tplManage, t.tplManageShort) +
       act('goAbout', 'ⓘ', t.aboutTitle, ''));
   },
@@ -3386,7 +3393,7 @@ const A = {
   },
 
   /* ----- Turnier anlegen und einstellen ----- */
-  newTour(){ const x = newTourObj(); DB.tours.push(x); save(); go({ v: 'setup', id: x.id }); },
+  newTour(){ if(needProNew()) return; const x = newTourObj(); DB.tours.push(x); save(); go({ v: 'setup', id: x.id }); },
   openTour(el){ const x = tourById(el.dataset.id); go(built(x) ? { v: 'tour', id: x.id, tab: 'plan' } : { v: 'setup', id: x.id }); },
   goSetup(){ go({ v: 'setup', id: cur().id }); },
   openTourPlan(){ const prev = STACK[STACK.length - 2]; if(prev && prev.v === 'tour' && prev.id === cur().id) back(); else replace({ v: 'tour', id: cur().id, tab: 'plan' }); },
@@ -3400,7 +3407,7 @@ const A = {
   },
   cfgSet(el){
     const x = curTour(), k = el.dataset.k, v = el.dataset.v;
-    if(k === 'mode' && v === 'kids' && needPro('kids')) return;
+    if(k === 'mode' && v === 'kids' && needPro('kids', x)) return;
     const hasRes = x.matches.some(m => m.res);
     if(k === 'score' && hasRes && (v === 'sets') !== (x.cfg.score === 'sets')){
       askConfirm(T().scoreChangeQ, T().scoreChangeText, T().continueBtn, () => {
@@ -3485,7 +3492,7 @@ const A = {
   toDraw(){
     const x = curTour();
     if(x.teams.filter(e => e.act).length < 2){ toast(T().errTeams); return; }
-    if(x.teams.filter(e => e.act).length > FREE_TEAMS && needPro('teams')) return;
+    if(needPro('more', x)) return;
     if(!drawFits(x)) doDraw(x);
     save();
     if(x.cfg.mode === 'league'){ buildNow(x); return; }
@@ -3511,7 +3518,7 @@ const A = {
   },
   dupTour(el){
     const x = tourArg(el), t = T();
-    if(!x) return;
+    if(!x || needProNew()) return;
     const y = newTourObj();
     y.name = (x.name + ' ' + t.copySuffix).slice(0, 60); y.cfg = cleanCfg(JSON.parse(JSON.stringify(x.cfg)));
     y.teams = x.teams.map(e => Object.assign({}, e, { act: true, name: tname(x, e.id), ref: e.ref && !!teamById(e.id) }));
@@ -4281,7 +4288,7 @@ function pickBinary(accept, handler){
 }
 const readDataUrl = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result)); r.onerror = rej; r.readAsDataURL(f); });
 function soundSettingsHtml(){
-  const t = T(), cur = isPro() ? DB.prefs.snd : 'horn';
+  const t = T(), cur = fullNow() ? DB.prefs.snd : 'horn';
   let h = '<label class="lb" style="margin-top:0">' + esc(t.sndTitle) + '</label><div class="chips" style="margin-bottom:8px">' +
     SOUNDS.map(sn => '<button class="chip' + (cur === sn ? ' on' : '') + '" data-act="sndSet" data-v="' + sn + '">' + esc(t['snd_' + sn]) + '</button>').join('') + '</div>' +
     '<div class="row2"><button class="btn sm soft" data-act="sndTry" data-k="start">▶ ' + esc(t.sndStart) + '</button><button class="btn sm soft" data-act="sndTry" data-k="warn">▶ ' + esc(t.sndWarn) + '</button><button class="btn sm soft" data-act="sndTry" data-k="end">▶ ' + esc(t.sndEnd) + '</button></div>';
@@ -4360,7 +4367,7 @@ Object.assign(A, {
   },
   docxDel(){ setImg('cert:docx', null).then(() => render(false)); },
   /* Urkunden erzeugen */
-  certs(){ if(needPro('certs')) return; const x = curTour(); CERT_SHEET.upTo = CERT_SHEET.upTo || 3; certSheet(x); },
+  certs(){ const x = curTour(); if(needPro('certs', x)) return; CERT_SHEET.upTo = CERT_SHEET.upTo || 3; certSheet(x); },
   csType(el){ CERT_SHEET.type = el.dataset.v; certSheet(curTour()); },
   csStep(el){ CERT_SHEET.upTo += +el.dataset.d; certSheet(curTour()); },
   csPdf(){ const x = curTour(); closeSheet(); certPdf(x, CERT_SHEET.type, CERT_SHEET.upTo).catch(() => toast(T().exportFailed)); },
@@ -4377,7 +4384,7 @@ Object.assign(A, {
   showNext(){ showNext(); },
   /* Beamer */
   beamer(){
-    if(needPro('beamer')) return;
+    if(needPro('beamer', curTour())) return;
     closeSheet(); BEAM = { i: 0, at: Date.now() };
     go({ v: 'beamer', id: cur().id });
     try { const d = document.documentElement; (d.requestFullscreen || d.webkitRequestFullscreen || (() => {})).call(d); } catch(e){}
@@ -4449,12 +4456,13 @@ Object.assign(A, {
   },
   newTourPick(){
     const t = T();
+    if(needProNew()) return;
     if(!DB.tpls.length){ A.newTour(); return; }
     openSheet(t.newTour, t.newFromTplHint, act('newTour', '＋', t.emptyTour, t.emptyTourHint) + DB.tpls.map(p => act('newFromTpl', '📋', p.name, modeName(p.cfg.mode) + ' · ' + t.nTeams(p.teams.length), ' data-id="' + p.id + '"')).join(''));
   },
   newFromTpl(el){
     const p = DB.tpls.find(q => q.id === el.dataset.id);
-    if(!p) return;
+    if(!p || needProNew()) return;
     const x = newTourObj();
     x.name = p.name + ' ' + fmtDate(todayStr()); x.cfg = cleanCfg(JSON.parse(JSON.stringify(p.cfg)));
     x.teams = p.teams.map(e => Object.assign({}, e, { ref: e.ref && !!teamById(e.id), act: true, players: e.players ? e.players.map(q => Object.assign({}, q)) : undefined }));
@@ -4561,7 +4569,11 @@ function importTourPacket(pk){
   finishTourImport(x);
 }
 function finishTourImport(x){
-  DB.tours.push(x); save();
+  // Empfangen legt ein Turnier an: ohne Pro nur das Gratis-Turnier selbst
+  if(!fullFor(x)){ closeSheet(); A.paywall({ dataset: { f: 'more' } }); return; }
+  DB.tours.push(x);
+  if(built(x)) claimFree(x);
+  save();
   STACK = [{ v: 'home' }, built(x) ? { v: 'tour', id: x.id, tab: 'plan' } : { v: 'setup', id: x.id }];
   closeSheet(); render(true); toast(T().tourImported);
 }
@@ -4691,18 +4703,65 @@ function clockChanged(x){
 
 /* ----- Freemium / In-App-Kauf -----
    FREEMIUM = false: alles freigeschaltet (TestFlight, Beta). Vor der
-   Veroeffentlichung auf true setzen; dann gelten die Grenzen der
-   Basis-Version und "Pro" wird einmalig im App Store gekauft. */
+   Veroeffentlichung auf true setzen; dann gilt:
+   - Das erste Turnier, fuer das ein Spielplan erstellt wird, ist gratis
+     und hat ALLE Funktionen (DB.freeId merkt sich, welches es ist).
+   - Danach braucht jedes weitere Turnier "Pro" (Einmalkauf).
+   - Entwuerfe zaehlen nicht. Loeschen gibt das Gratis-Turnier nicht frei.
+   - freeId steht zusaetzlich im iOS-Schluesselbund (Plugin tp-mark) und
+     bleibt so auch nach einer Neuinstallation erhalten. */
 const FREEMIUM = false;
 const PRO_ID = 'de.turnierpro.app.pro';
-const FREE_TEAMS = 6;
+const MARK_KEY = 'freeTour';
 let STORE_PRICE = null;
 const isPro = () => !FREEMIUM || DB.pro === true;
+/* darf dieses Turnier alle Funktionen nutzen? */
+const fullFor = x => isPro() || !DB.freeId || !!(x && x.id === DB.freeId);
+/* globale Einstellungen (Signaltoene): frei, solange das Gratis-Turnier laeuft */
+function fullNow(){
+  if(isPro() || !DB.freeId) return true;
+  const f = tourById(DB.freeId);
+  return !!(f && !f.done);
+}
+/* darf ein weiteres Turnier angelegt werden? */
+const mayAddTour = () => isPro() || !DB.freeId;
 /* liefert true, wenn die Funktion gesperrt ist (und zeigt dann das Angebot) */
-function needPro(feature){
-  if(isPro()) return false;
+function needPro(feature, x){
+  if(x === undefined ? fullNow() : fullFor(x)) return false;
   A.paywall({ dataset: { f: feature } });
   return true;
+}
+function needProNew(){
+  if(mayAddTour()) return false;
+  A.paywall({ dataset: { f: 'more' } });
+  return true;
+}
+/* Gratis-Turnier festhalten (beim ersten Spielplan bzw. Empfang eines fertigen Turniers) */
+function claimFree(x){
+  if(!FREEMIUM || isPro() || DB.freeId || !x) return;
+  DB.freeId = x.id; save();
+  markSet(x.id);
+}
+/* Turniere mit Spielplan, aber noch kein Gratis-Turnier vermerkt (Daten aus
+   der Testphase oder einer Sicherung): das aelteste zaehlt als Gratis-Turnier. */
+function ensureFree(){
+  if(!FREEMIUM || isPro() || DB.freeId) return;
+  const b = DB.tours.filter(built).sort((a, c) => (a.created || 0) - (c.created || 0))[0];
+  if(b) claimFree(b);
+}
+function markApi(){ return window.TpMark && typeof window.TpMark.get === 'function' ? window.TpMark : null; }
+function markSet(v){ const m = markApi(); if(m) try { m.set(MARK_KEY, v, () => {}, () => {}); } catch(e){} }
+/* beim Start: Schluesselbund und lokale Daten abgleichen */
+function initMark(){
+  const m = markApi();
+  if(!m) return;
+  try {
+    m.get(MARK_KEY, v => {
+      v = cleanId(v) || '';
+      if(v && !DB.freeId){ DB.freeId = v; save(); render(false); }
+      else if(!v && DB.freeId) markSet(DB.freeId);
+    }, () => {});
+  } catch(e){}
 }
 function initStore(){
   const CP = window.CdvPurchase;
@@ -4731,9 +4790,8 @@ function paywallBody(feature){
 Object.assign(A, {
   /* Weitergeben */
   handover(el){
-    if(needPro('share')) return;
     const t = T(), x = tourArg(el);
-    if(!x) return;
+    if(!x || needPro('share', x)) return;
     const d = ' data-id="' + x.id + '"';
     closeSheet();
     openSheet(t.handover, t.handoverHint, act('handFile', '📄', t.handFile, t.handFileHint, d) + act('handQr', '🔳', t.handQr, t.handQrHint, d));
@@ -4782,6 +4840,7 @@ Object.assign(A, {
   importReplace(){
     const x = PENDING_IMPORT; PENDING_IMPORT = null;
     if(!x) return;
+    if(!fullFor(x)){ closeSheet(); A.paywall({ dataset: { f: 'more' } }); return; }
     DB.tours = DB.tours.filter(y => y.id !== x.id);
     finishTourImport(x);
   },
@@ -4949,7 +5008,9 @@ document.addEventListener('keydown', e => {
 document.addEventListener('deviceready', () => {
   document.addEventListener('backbutton', e => { e.preventDefault(); back(); }, false);
   initStore();
+  initMark();
 }, false);
+ensureFree();
 
 /* Web-Fassung: offline nutzbar */
 if('serviceWorker' in navigator && location.protocol === 'https:' && location.hostname !== 'localhost'){
