@@ -1,20 +1,8 @@
 {
-  "name": "cordova-plugin-tb-share",
-  "version": "1.1.0",
-  "description": "Teilt in JavaScript erzeugte Dateien ueber das Android-Teilen-Menue.",
-  "cordova": {
-    "id": "cordova-plugin-tb-share",
-    "platforms": [
-      "android"
-    ]
-  },
-  "keywords": [
-    "cordova",
-    "android",
-    "share",
-    "ecosystem:cordova",
-    "cordova-android"
-  ],
-  "author": "Simon Mählmann",
-  "license": "MIT"
+  "name": "cordova-plugin-tp-mark",
+  "version": "1.0.0",
+  "description": "Kurzer Wert im iOS-Schluesselbund fuer TurnierPro",
+  "license": "MIT",
+  "cordova": { "id": "cordova-plugin-tp-mark", "platforms": ["ios"] },
+  "keywords": ["ecosystem:cordova", "cordova-ios"]
 }
