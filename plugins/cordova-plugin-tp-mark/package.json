@@ -1,0 +1,8 @@
+{
+  "name": "cordova-plugin-tp-mark",
+  "version": "1.0.0",
+  "description": "Kurzer Wert im iOS-Schluesselbund fuer TurnierPro",
+  "license": "MIT",
+  "cordova": { "id": "cordova-plugin-tp-mark", "platforms": ["ios"] },
+  "keywords": ["ecosystem:cordova", "cordova-ios"]
+}

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-tp-mark"
+        version="1.0.0">
+
+    <name>TpMark</name>
+    <description>Merkt sich einen kurzen Wert im iOS-Schluesselbund (bleibt nach Neuinstallation erhalten).
+        TurnierPro nutzt das fuer das bereits verwendete Gratis-Turnier.</description>
+    <license>MIT</license>
+
+    <engines>
+        <engine name="cordova-ios" version=">=6.0.0" />
+    </engines>
+
+    <js-module src="www/tpmark.js" name="TpMark">
+        <clobbers target="TpMark" />
+    </js-module>
+
+    <!-- Nur iOS. Die Dateien liegen flach im Plugin-Ordner (leichter ueber
+         die GitHub-Weboberflaeche hochzuladen). -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="TpMark">
+                <param name="ios-package" value="TpMark" />
+            </feature>
+        </config-file>
+        <header-file src="TpMark.h" />
+        <source-file src="TpMark.m" />
+        <framework src="Security.framework" />
+    </platform>
+</plugin>
