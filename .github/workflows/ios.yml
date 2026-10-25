@@ -142,6 +142,11 @@ jobs:
           cordova plugin add "$PLUGIN_WACH" --no-telemetry
           cordova plugin add "$PLUGIN_ERINNERUNG" --no-telemetry
           cordova plugin add "$PLUGIN_KAUF" --no-telemetry
+          # Eigenes Plugin: merkt sich das verbrauchte Gratis-Turnier im
+          # Schluesselbund (bleibt nach Neuinstallation erhalten). Fehlt es,
+          # laeuft die App trotzdem - der Wert steht dann nur lokal.
+          cordova plugin add ../plugins/cordova-plugin-tp-mark --no-telemetry \
+            || echo "::warning::Schluesselbund-Plugin nicht eingebunden - Gratis-Turnier wird nur lokal gemerkt." | tee -a "$GITHUB_STEP_SUMMARY"
           # Das eigene Teilen-Plugin (plugins/cordova-plugin-tb-share) ist
           # reines Android und wird hier bewusst nicht eingebunden.
           cordova plugin ls
