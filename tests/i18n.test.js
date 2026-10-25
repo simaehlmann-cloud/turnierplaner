@@ -20,7 +20,7 @@ const dyn = [].concat(
   ['whistle', 'horn', 'ship', 'airhorn', 'siren', 'gong', 'custom'].map(k => 'snd_' + k),
   ['classic', 'kids', 'school', 'image'].map(k => 'certD_' + k), ['place', 'team', 'player'].map(k => 'certT_' + k),
   ['title', 'top', 'big', 'name', 'bottom'].map(k => 'certF_' + k), ['goal', 'y', 'tp', 'r'].map(k => 'evBtn_' + k),
-  ['teams', 'kids', 'certs', 'share', 'beamer', 'sounds'].map(k => 'proWhy_' + k), ['certSigDef1', 'certSigDef2', 'sndStart', 'sndWarn', 'sndEnd', 'seedHint_fair_kids', 'seedHint_random_kids', 'seedHint_manual_kids', 'certDef', 'docx']);
+  ['more', 'kids', 'certs', 'share', 'beamer', 'sounds'].map(k => 'proWhy_' + k), ['certSigDef1', 'certSigDef2', 'sndStart', 'sndWarn', 'sndEnd', 'seedHint_fair_kids', 'seedHint_random_kids', 'seedHint_manual_kids', 'certDef', 'docx']);
 dyn.forEach(k => { if(!(k in I18N.de)){ console.log('fehlt (dynamisch): ' + k); bad++; } });
 ['place', 'team', 'player'].forEach(ty => ['title', 'top', 'big', 'name', 'bottom'].forEach(f => ['de', 'en'].forEach(l => {
   if(!I18N[l].certDef || !I18N[l].certDef[ty] || typeof I18N[l].certDef[ty][f] !== 'string'){ console.log('certDef fehlt: ' + l + ' ' + ty + '.' + f); bad++; }
