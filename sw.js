@@ -1,13 +1,15 @@
 /* TurnierPro Service Worker
  *
  * Strategie:
- *   - App-Shell (index.html / Navigation): NETWORK FIRST.
+ *   - Seiten (index.html und die Rechtstexte): NETWORK FIRST.
  *     So bekommt jeder Nutzer beim naechsten Start automatisch die aktuelle
- *     Version. Der Cache dient nur noch als Offline-Fallback.
- *   - Uebrige Assets (Icons, datenschutz.html): CACHE FIRST,
+ *     Version. Der Cache dient nur noch als Offline-Fallback. Jede Seite wird
+ *     unter ihrem eigenen Namen gespeichert (frueher landete jede Navigation,
+ *     z. B. datenschutz.html, faelschlich als index.html im Cache).
+ *   - Uebrige Assets (Icons, lib/): CACHE FIRST,
  *     da sie sich praktisch nie aendern und offline sofort da sein muessen.
  */
-const CACHE_NAME = 'turnierpro-v1.0';
+const CACHE_NAME = 'turnierpro-v1.2';
 const SHELL = './index.html';
 const ASSETS = [
   './',
@@ -18,7 +20,9 @@ const ASSETS = [
   './datenschutz.html',
   './impressum.html',
   './datenschutz-en.html',
-  './impressum-en.html'
+  './impressum-en.html',
+  './lib/tp-zxing.js',
+  './lib/tp-zxing.wasm'
 ];
 
 self.addEventListener('install', event => {
@@ -49,20 +53,25 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  const isShell = req.mode === 'navigate' || new URL(req.url).pathname.endsWith('/index.html');
+  const path = new URL(req.url).pathname;
+  const isShell = path.endsWith('/') || path.endsWith('/index.html');
+  const isPage = isShell || req.mode === 'navigate' || path.endsWith('.html');
 
-  if (isShell) {
-    // NETWORK FIRST - immer die neueste index.html, Cache nur als Fallback
+  if (isPage) {
+    // NETWORK FIRST - immer die neueste Seite, Cache nur als Fallback.
+    // Die App selbst unter SHELL, alle anderen Seiten unter ihrer eigenen Adresse.
+    const key = isShell ? SHELL : req;
     event.respondWith(
       fetch(req)
         .then(res => {
-          if (res && res.ok) {
+          if (res && res.ok && !res.redirected) {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(SHELL, copy)).catch(() => {});
+            caches.open(CACHE_NAME).then(cache => cache.put(key, copy)).catch(() => {});
           }
           return res;
         })
-        .catch(() => caches.match(SHELL).then(hit => hit || caches.match('./')))
+        .catch(() => caches.match(key, { ignoreSearch: true })
+          .then(hit => hit || (isShell ? caches.match('./') : caches.match(SHELL))))
     );
     return;
   }

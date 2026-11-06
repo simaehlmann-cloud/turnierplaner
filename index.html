@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <!-- Content-Security-Policy: TurnierPro laedt nichts nach. Alles steckt in
-     dieser Datei, die App baut von sich aus keine Verbindung nach aussen auf. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'none'" />
+     dieser Datei (bzw. in lib/), die App baut von sich aus keine Verbindung
+     nach aussen auf.
+     'wasm-unsafe-eval' braucht der QR-Scanner (lib/tp-zxing.wasm, WebAssembly).
+     iOS 15 bis 16.3 kennt diesen Schluessel noch nicht und erlaubt WebAssembly
+     nur mit 'unsafe-eval' - deshalb stehen beide da. Geladen wird trotzdem nur
+     Eigenes ('self'). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; font-src 'self'; media-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'none'" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#111111" />
 <title>TurnierPro</title>
@@ -371,7 +376,7 @@ body.beam .wrap.wide { max-width:1600px; }
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
-   SPRACHE  (App-Name: Deutsch TurnierPro, Englisch TourneyPro)
+   SPRACHE  (App-Name: TurnierPro in beiden Sprachen)
 --------------------------------------------------------------------- */
 const I18N = {
   de: {
@@ -500,7 +505,7 @@ const I18N = {
     pause: 'Pause', resume: 'Weiter', start: 'Anpfiff', reset: 'Reset', nextRound: 'Nächste Runde',
     plannedAt: (tm, d) => 'geplant ' + tm + ' Uhr · ' + d + ' Min.', ready: 'bereit', running: 'läuft', paused: 'angehalten', timeUp: 'Zeit abgelaufen – Abpfiff!',
     matchesNow: 'Spiele dieser Runde', soundOn: 'Signaltöne', soundSub: 'Anpfiff, letzte Minute und Ende',
-    clockHint: 'Eine Uhr für alle Felder. Der Bildschirm bleibt an, solange sie läuft. Am iPhone den Stummschalter beachten; für den Platz eine Bluetooth-Box verbinden.',
+    clockHint: and => 'Eine Uhr für alle Felder. Der Bildschirm bleibt an, solange sie läuft. ' + (and ? 'Medienlautstärke aufdrehen' : 'Am iPhone den Stummschalter beachten') + '; für den Platz eine Bluetooth-Box verbinden.',
     lateText: d => 'Ihr seid ' + d + ' Min. hinter dem Zeitplan.', lateBtn: d => 'Zeitplan ab dieser Runde um ' + d + ' Min. verschieben', shifted: d => 'Zeitplan um ' + d + ' Min. verschoben.',
     // Menue, Teilen
     finishTour: 'Turnier abschließen', finishHint: 'Kommt ins Archiv; Namen bleiben wie heute', reopen: 'Wieder öffnen',
@@ -581,7 +586,7 @@ const I18N = {
     recvScan: 'QR-Code scannen', recvScanHint: 'Codes vom anderen Gerät abfilmen – ganz ohne Internet',
     handover: 'Turnier weitergeben', handoverShort: 'an ein anderes Gerät (Datei oder QR)', handoverHint: 'Das andere Gerät braucht ebenfalls die App.',
     handFile: 'Als Datei', handFileHint: 'AirDrop, WhatsApp, Mail – inklusive Kader und Wappen', handQr: 'Als QR-Codes', handQrHint: 'Das andere Gerät scannt die Codes – ohne Internet, ohne Bilder',
-    qrHint: n => n === 1 ? 'Auf dem anderen Gerät: Empfangen → QR-Code scannen.' : n + ' Codes wechseln automatisch – auf dem anderen Gerät „Empfangen → QR-Code scannen“ und draufhalten, bis alle erfasst sind.',
+    qrHint: n => (n === 1 ? 'Auf dem anderen Gerät: Empfangen → QR-Code scannen.' : n + ' Codes wechseln automatisch – auf dem anderen Gerät „Empfangen → QR-Code scannen“ und draufhalten, bis alle erfasst sind.') + ' Tipp: Bildschirm hell stellen.',
     qrAuto: '⏯ Automatisch', tourFile: 'Turnier', tourFileDone: 'Turnier-Datei erstellt.', tourImportErr: 'Das ist keine gültige Turnier-Datei.',
     tourExists: n => '„' + n + '“ gibt es schon', tourExistsHint: 'Dieses Turnier ist bereits auf dem Gerät.',
     importReplace: 'Aktualisieren', importReplaceHint: 'mit dem empfangenen Stand überschreiben', importCopy: 'Als Kopie anlegen', importCopyHint: 'beide Stände behalten', tourImported: 'Turnier übernommen.',
@@ -597,7 +602,7 @@ const I18N = {
     proThanks: 'Pro ist freigeschaltet – danke!', proNoStore: 'Der App Store ist gerade nicht erreichbar.', proFailed: 'Kauf nicht abgeschlossen.', proRestored: 'Pro wiederhergestellt.', proNothing: 'Kein früherer Kauf gefunden.'
   },
   en: {
-    appName: 'TourneyPro', back: 'Back', cancel: 'Cancel', save: 'Save', del: 'Delete', add: 'Add', create: 'Create',
+    appName: 'TurnierPro', back: 'Back', cancel: 'Cancel', save: 'Save', del: 'Delete', add: 'Add', create: 'Create',
     remove: 'Remove', change: 'Change', choose: 'Choose', take: 'Apply', optional: 'optional', later: 'Later', more: 'More',
     continueBtn: 'Continue', settings: 'Settings', share: 'Share', version: 'Version',
     heroTitle: 'Plan a tournament',
@@ -609,14 +614,14 @@ const I18N = {
     backupNow: 'Back up now', backupExport: 'Export backup', backupExportHint: 'All teams, tournaments and pictures as a file',
     backupImport: 'Import backup', backupImportHint: 'Add missing teams and tournaments from a file',
     backupDone: 'Backup created.', savedDownloads: 'Saved to “Downloads”.', exportFailed: 'Export failed.',
-    importError: 'This is not a TourneyPro backup.', imported: (a, b) => 'Imported: ' + a + ' teams, ' + b + ' tournaments.',
+    importError: 'This is not a TurnierPro backup.', imported: (a, b) => 'Imported: ' + a + ' teams, ' + b + ' tournaments.',
     saveFailed: 'Saving failed – storage full?', imgSaveFailed: 'Picture could not be saved.', imgFailed: 'Picture could not be read.',
     copied: 'Copied to clipboard.',
     theme: 'Appearance', themeDark: 'Dark', themeLight: 'Light (sun)',
     soundTest: 'Test signals', soundTestHint: 'Kick-off, last minute, end',
-    aboutTitle: 'About TourneyPro', privacy: 'Privacy', imprint: 'Legal notice',
+    aboutTitle: 'About TurnierPro', privacy: 'Privacy', imprint: 'Legal notice',
     aboutText: [
-      '<b>TourneyPro</b> plans tournaments for clubs, schools and PE lessons: enter teams, choose a format, draw – and the schedule with kick-off times, pitches and referees is ready.',
+      '<b>TurnierPro</b> plans tournaments for clubs, schools and PE lessons: enter teams, choose a format, draw – and the schedule with kick-off times, pitches and referees is ready.',
       '<b>Formats:</b> round robin, groups with knockout stage (incl. best third-placed teams and placement matches) and pure knockout with byes.',
       '<b>Flexible scoring:</b> goals, points or sets, points for win/draw/loss and the tie-break order (e.g. head-to-head).',
       '<b>During the tournament:</b> tap results, tables update themselves. The tournament clock signals kick-off, last minute and end. If a team drops out, set it to inactive.',
@@ -717,7 +722,7 @@ const I18N = {
     pause: 'Pause', resume: 'Resume', start: 'Kick-off', reset: 'Reset', nextRound: 'Next round',
     plannedAt: (tm, d) => 'planned ' + tm + ' · ' + d + ' min', ready: 'ready', running: 'running', paused: 'paused', timeUp: 'Time is up – final whistle!',
     matchesNow: 'Matches this round', soundOn: 'Signals', soundSub: 'Kick-off, last minute and end',
-    clockHint: 'One clock for all pitches. The screen stays on while it runs. Mind the silent switch on iPhone; connect a Bluetooth speaker for the pitch.',
+    clockHint: and => 'One clock for all pitches. The screen stays on while it runs. ' + (and ? 'Turn the media volume up' : 'Mind the silent switch on iPhone') + '; connect a Bluetooth speaker for the pitch.',
     lateText: d => 'You are ' + d + ' min behind schedule.', lateBtn: d => 'Shift schedule from this round by ' + d + ' min', shifted: d => 'Schedule shifted by ' + d + ' min.',
     finishTour: 'Finish tournament', finishHint: 'Moves to the archive; names stay as they are today', reopen: 'Reopen',
     finishedToast: 'Tournament finished.', reopenedToast: 'Tournament reopened.',
@@ -762,7 +767,7 @@ const I18N = {
     certPhHint: 'Placeholders: {{TEAM}} {{PLACE}} {{TOURNAMENT}} {{DATE}} {{PLAYER}} {{CLUB}} {{CITY}}', certReset: 'Default texts', certResetDone: 'Default texts restored.',
     certWord: 'Word template', certWordHint: 'Download the sample template, design it in Word (keep placeholders like {{TEAM}}) and upload it again. The app fills it in – one page per certificate.',
     certWordOwn: 'Own template active', certWordSample: 'The sample template is used.', certWordDl: 'Download sample', certWordUp: 'Upload template',
-    docxSampleName: 'TourneyPro_certificate_template', docxTooBig: 'File too large (max. 6 MB).', docxBad: 'This is not a valid Word file (.docx).',
+    docxSampleName: 'TurnierPro_certificate_template', docxTooBig: 'File too large (max. 6 MB).', docxBad: 'This is not a valid Word file (.docx).',
     docxOk: n => 'Template saved – ' + n + ' placeholders found.', docxNoPh: 'Template saved, but no placeholders like {{TEAM}} found.', docxFail: 'Word file could not be created.',
     docx: { title: 'CERTIFICATE', top: 'At the', on: 'on', bottom: 'Congratulations!', sig1: 'Tournament director', sig2: 'Coach' },
     certUpTo: 'Places 1 to', certCount: n => n === 1 ? '1 certificate' : n + ' certificates', certNotFinal: 'Note: the final standings are not complete yet.',
@@ -797,14 +802,14 @@ const I18N = {
     recvScan: 'Scan QR code', recvScanHint: 'Film the codes on the other device – no internet needed',
     handover: 'Pass on tournament', handoverShort: 'to another device (file or QR)', handoverHint: 'The other device also needs the app.',
     handFile: 'As a file', handFileHint: 'AirDrop, WhatsApp, mail – including squads and crests', handQr: 'As QR codes', handQrHint: 'The other device scans the codes – no internet, no pictures',
-    qrHint: n => n === 1 ? 'On the other device: Receive → Scan QR code.' : n + ' codes change automatically – on the other device use “Receive → Scan QR code” and hold it up until all are captured.',
+    qrHint: n => (n === 1 ? 'On the other device: Receive → Scan QR code.' : n + ' codes change automatically – on the other device use “Receive → Scan QR code” and hold it up until all are captured.') + ' Tip: turn your screen brightness up.',
     qrAuto: '⏯ Auto', tourFile: 'Tournament', tourFileDone: 'Tournament file created.', tourImportErr: 'This is not a valid tournament file.',
     tourExists: n => '“' + n + '” already exists', tourExistsHint: 'This tournament is already on the device.',
     importReplace: 'Update', importReplaceHint: 'overwrite with the received version', importCopy: 'Create a copy', importCopyHint: 'keep both versions', tourImported: 'Tournament imported.',
     scanTitle: 'Scan QR code', scanHint: 'Point the camera at the code …', scanPhoto: 'Take a photo instead', scanPhotoHint: 'If the live camera does not start: photograph each code separately.',
     scanNoCam: 'Camera not available – please photograph the codes one by one.', scanProgress: (g, n) => g + ' of ' + n + ' codes captured', scanNoCode: 'No tournament code found in the photo.',
     lnWarn: w => w + ': 1 minute left', lnEnd: w => w + ': time is up – final whistle!',
-    proTitle: 'TourneyPro Pro', proShort: 'unlock all features', proActive: 'Pro is unlocked – thank you!', proIncludes: 'Pro includes',
+    proTitle: 'TurnierPro Pro', proShort: 'unlock all features', proActive: 'Pro is unlocked – thank you!', proIncludes: 'Pro includes',
     proList: ['Unlimited tournaments', 'Kids football mode', 'Certificates as PDF and Word – with photos', 'Pass on tournaments via file and QR', 'All signal sounds incl. your own', 'Projector mode'],
     proFreeHint: 'Your first tournament is free – with all features',
     proBuy: p => 'Unlock Pro' + (p ? ' – ' + p : ''), proRestore: 'Restore purchases', proOnce: 'One-time purchase, no subscription. Valid on all your devices with the same Apple ID.',
@@ -2638,7 +2643,7 @@ function viewClock(x){
   h += penaltiesHtml(x, k.s);
   h += toggle(t.soundOn, t.soundSub, 'cfgToggle', x.cfg.sound, ' data-k="sound"') +
     '<button class="btn ghost sm" data-act="soundTest" style="margin-top:8px">🔊 ' + esc(t.soundTest) + ' · ' + esc(t['snd_' + DB.prefs.snd]) + '</button>' +
-    '<div class="hint">' + esc(t.clockHint) + '</div>';
+    '<div class="hint">' + esc(t.clockHint(isAndroid())) + '</div>';
   return h;
 }
 /* Wie viele Minuten liegt das Turnier hinter dem Plan? Nur am Turniertag,
@@ -4593,7 +4598,7 @@ function qrSvg(text){
   const n = q.getModuleCount(), m = 4, size = n + 2 * m;
   let d = '';
   for(let r = 0; r < n; r++) for(let c = 0; c < n; c++) if(q.isDark(r, c)) d += 'M' + (c + m) + ' ' + (r + m) + 'h1v1h-1z';
-  return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" style="max-width:340px;display:block;margin:0 auto;background:#fff;border-radius:12px" shape-rendering="crispEdges"><path d="' + d + '" fill="#000"/></svg>';
+  return '<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" style="max-width:520px;display:block;margin:0 auto;background:#fff;border-radius:12px" shape-rendering="crispEdges"><path d="' + d + '" fill="#000"/></svg>';
 }
 let QRSHOW = null;
 function renderQrSheet(){
@@ -4605,10 +4610,23 @@ function renderQrSheet(){
 }
 function stopQrShow(){ if(QRSHOW && QRSHOW.timer) clearInterval(QRSHOW.timer); QRSHOW = null; }
 
-/* Scanner: Kamera live (getUserMedia) oder einzelnes Foto */
+/* Android-Geraet? (App: Cordova-Plattform; Browser/PWA: Kennung des Browsers) */
+function isAndroid(){
+  return !!(window.cordova && window.cordova.platformId === 'android') || /Android/i.test(navigator.userAgent || '');
+}
+/* Scanner: Kamera live (getUserMedia) oder einzelnes Foto.
+   Reihenfolge der Leser (wie in PitchPro):
+   1. BarcodeDetector - eingebauter Scanner der Android-WebView. Am robustesten.
+   2. ZXing (lib/tp-zxing.js + tp-zxing.wasm) - iOS hat keinen BarcodeDetector.
+      jsQR allein schafft die dichten Turnier-Codes (rund 89 x 89 Felder) vom
+      Bildschirm eines anderen Geraets kaum; ZXing schon.
+   3. jsQR (oben eingebettet) - nur falls WebAssembly nicht startet.
+   Das QR-Format (TP3:...) bleibt unveraendert, alte und neue App-Versionen
+   koennen weiter Turniere austauschen. */
 let SCAN = null;
-function scanReset(){ return { id: null, n: 0, parts: {}, stream: null, raf: 0, last: 0 }; }
+function scanReset(){ return { id: null, n: 0, parts: {}, stream: null, raf: 0, last: 0, busy: false }; }
 function scanFeed(text){
+  if(!SCAN) return true;   // Scan schon beendet (z. B. Foto kam nach dem letzten Code) - nichts tun
   const m = /^TP3:([a-z0-9]+):(\d+)\/(\d+):(.*)$/i.exec(String(text || '').trim());
   if(!m) return false;
   const id = m[1], i = +m[2], n = +m[3];
@@ -4626,8 +4644,75 @@ function scanFeed(text){
   }
   return true;
 }
-function decodeImageData(id){
-  try { const c = jsQR(id.data, id.width, id.height, { inversionAttempts: 'attemptBoth' }); return c ? c.data : null; } catch(e){ return null; }
+function decodeImageData(id, both){
+  try { const c = jsQR(id.data, id.width, id.height, { inversionAttempts: both ? 'attemptBoth' : 'dontInvert' }); return c ? c.data : null; } catch(e){ return null; }
+}
+/* Datei aus dem App-Paket als Bytes (fetch, sonst XMLHttpRequest - manche
+   lokalen Schemata kann fetch nicht) */
+function libBytes(path){
+  return fetch(path).then(r => { if(!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .catch(() => new Promise((res, rej) => {
+      const x = new XMLHttpRequest(); x.open('GET', path); x.responseType = 'arraybuffer';
+      x.onload = () => x.response && x.response.byteLength ? res(x.response) : rej(new Error('leer'));
+      x.onerror = () => rej(new Error('xhr')); x.send();
+    }));
+}
+function libScript(name){
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'lib/' + name + '.js';
+    s.onload = () => res();
+    s.onerror = () => { s.remove(); rej(new Error(name)); };
+    document.head.appendChild(s);
+  });
+}
+let zxingP = null;
+function zxingLoad(){
+  if(!zxingP) zxingP = (async () => {
+    if(typeof WebAssembly !== 'object') throw new Error('kein WebAssembly');
+    if(!window.ZXingWASM) await libScript('tp-zxing');
+    const bin = await libBytes('lib/tp-zxing.wasm');
+    // wasmBinary + locateFile: die Bibliothek wuerde sonst aus dem Netz (CDN) laden
+    await window.ZXingWASM.prepareZXingModule({ overrides: { wasmBinary: bin, locateFile: f => 'lib/' + f }, fireImmediately: true });
+    return window.ZXingWASM;
+  })().catch(e => { zxingP = null; throw e; });
+  return zxingP;
+}
+let READER = null;   // gefundener Leser { det } | { zx } | {} (= nur jsQR)
+async function readerGet(){
+  if(READER) return READER;
+  if('BarcodeDetector' in window){
+    try {
+      const f = await window.BarcodeDetector.getSupportedFormats();
+      if(f.indexOf('qr_code') !== -1) return (READER = { det: new window.BarcodeDetector({ formats: ['qr_code'] }) });
+    } catch(e){}
+  }
+  try { return (READER = { zx: await zxingLoad() }); } catch(e){}
+  return {};   // nicht merken: beim naechsten Scannen ZXing erneut versuchen
+}
+/* mittiges Quadrat in voller Aufloesung (hoechstens max px) - der Code liegt
+   meist mittig, und verkleinern wuerde die feinen QR-Felder verwischen */
+function centerSquare(src, sw, sh, cv, frac, max){
+  const s = Math.round(Math.min(sw, sh) * frac), k = Math.min(1, max / s), w = Math.round(s * k);
+  if(cv.width !== w){ cv.width = w; cv.height = w; }
+  const cx = cv.getContext('2d', { willReadFrequently: true });
+  cx.drawImage(src, (sw - s) / 2, (sh - s) / 2, s, s, 0, 0, w, w);
+  return cx.getImageData(0, 0, w, w);
+}
+/* liest einen Code. all = alle verfuegbaren Leser nacheinander (Foto) */
+async function readCode(r, src, img, all){
+  if(r.det){
+    try { const c = await r.det.detect(src); if(c && c[0] && c[0].rawValue) return c[0].rawValue; } catch(e){}
+    if(!all) return null;
+  }
+  if(r.zx){
+    try {
+      const z = await r.zx.readBarcodes(img, { formats: ['QRCode'], tryHarder: true, maxNumberOfSymbols: 1 });
+      if(z && z[0] && z[0].isValid) return z[0].text;
+    } catch(e){}
+    if(!all) return null;
+  }
+  return decodeImageData(img, all);
 }
 function openScan(){
   const t = T();
@@ -4642,22 +4727,30 @@ function openScan(){
     '<div class="hint" style="color:rgba(255,255,255,.7);text-align:center;max-width:420px;margin:10px auto 0">' + esc(t.scanPhotoHint) + '</div></div>';
   const v = $('scan-video');
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ const st = $('scan-st'); if(st) st.textContent = t.scanNoCam; return; }
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false }).then(stream => {
+  const rP = readerGet();   // laedt ZXing parallel zum Kamerastart
+  // Full HD: die Codes sind dicht, jedes Pixel mehr pro QR-Feld hilft
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }).then(async stream => {
     if(!SCAN){ stream.getTracks().forEach(tr => tr.stop()); return; }
-    SCAN.stream = stream; v.srcObject = stream; v.play().catch(() => {});
-    const cv = document.createElement('canvas'), cx = cv.getContext('2d', { willReadFrequently: true });
+    const sc = SCAN;
+    sc.stream = stream; v.srcObject = stream; v.play().catch(() => {});
+    const r = await rP;
+    if(SCAN !== sc) return;
+    const cv = document.createElement('canvas');
     const loop = ts => {
-      if(!SCAN || !SCAN.stream) return;
-      SCAN.raf = requestAnimationFrame(loop);
-      if(ts - SCAN.last < 140 || !v.videoWidth) return;
-      SCAN.last = ts;
-      const k = Math.min(1, 720 / Math.max(v.videoWidth, v.videoHeight));
-      cv.width = Math.round(v.videoWidth * k); cv.height = Math.round(v.videoHeight * k);
-      cx.drawImage(v, 0, 0, cv.width, cv.height);
-      const txt = decodeImageData(cx.getImageData(0, 0, cv.width, cv.height));
-      if(txt) scanFeed(txt);
+      if(SCAN !== sc || !sc.stream) return;
+      sc.raf = requestAnimationFrame(loop);
+      if(sc.busy || ts - sc.last < 100 || !v.videoWidth) return;
+      sc.last = ts; sc.busy = true;
+      // ZXing: volle Aufloesung (bis 1080 px). jsQR liest verkleinert besser
+      // (weniger Rauschen) - abwechselnd 480 und 720 px.
+      sc.f = (sc.f || 0) + 1;
+      const img = r.det ? null : centerSquare(v, v.videoWidth, v.videoHeight, cv, 1, r.zx ? 1080 : (sc.f % 2 ? 480 : 720));
+      readCode(r, v, img, false)
+        .then(txt => { if(txt && SCAN === sc) scanFeed(txt); })
+        .catch(() => {})
+        .then(() => { sc.busy = false; });
     };
-    SCAN.raf = requestAnimationFrame(loop);
+    sc.raf = requestAnimationFrame(loop);
   }).catch(() => { const st = $('scan-st'); if(st) st.textContent = t.scanNoCam; });
 }
 function stopScan(){
@@ -4669,11 +4762,22 @@ function stopScan(){
 }
 function decodePhoto(file){
   const url = URL.createObjectURL(file), im = new Image();
-  im.onload = () => {
-    const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight));
-    const cv = document.createElement('canvas'); cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k);
-    const cx = cv.getContext('2d'); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
-    const txt = decodeImageData(cx.getImageData(0, 0, cv.width, cv.height));
+  im.onload = async () => {
+    URL.revokeObjectURL(url);
+    const r = await readerGet(), W = im.naturalWidth, H = im.naturalHeight;
+    const cv = document.createElement('canvas');
+    // 1. ganzes Bild (hoechstens 2000 px)
+    const k = Math.min(1, 2000 / Math.max(W, H));
+    cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    cx.drawImage(im, 0, 0, cv.width, cv.height);
+    let txt = await readCode(r, cv, cx.getImageData(0, 0, cv.width, cv.height), true);
+    // 2. mittlerer Ausschnitt in voller Aufloesung, 3. kleiner (hilft jsQR)
+    for(const [frac, max] of [[0.7, 2000], [0.7, 640]]){
+      if(txt) break;
+      const cv2 = document.createElement('canvas');
+      txt = await readCode(r, cv2, centerSquare(im, W, H, cv2, frac, max), true);
+    }
     if(!txt || !scanFeed(txt)) toast(T().scanNoCode);
   };
   im.onerror = () => { URL.revokeObjectURL(url); toast(T().imgFailed); };

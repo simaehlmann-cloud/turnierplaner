@@ -31,6 +31,15 @@
         <icon density="xxhdpi"  src="res/android/icon-144.png" foreground="res/android/fg-324.png" background="res/android/bg-324.png" />
         <icon density="xxxhdpi" src="res/android/icon-192.png" foreground="res/android/fg-432.png" background="res/android/bg-432.png" />
 
+        <!-- Kamera fuer den QR-Scanner (Turnier empfangen) und fuer Wappen/Fotos.
+             Ohne diesen Eintrag lehnt Android die Kamera-Anfrage der WebView
+             sofort ab. required="false": Die App bleibt auch fuer Geraete ohne
+             Rueckkamera im Play Store sichtbar. -->
+        <config-file target="AndroidManifest.xml" parent="/manifest" xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-feature android:name="android.hardware.camera" android:required="false" />
+        </config-file>
+
         <!-- Englischer App-Name auf englischsprachigen Geraeten -->
         <resource-file src="l10n/android/values-en/strings.xml" target="app/src/main/res/values-en/strings.xml" />
     </platform>

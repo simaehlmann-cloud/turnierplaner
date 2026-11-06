@@ -4,7 +4,7 @@ Offline-App für Trainer:innen, Jugendleiter:innen und Sportlehrkräfte. Aufgeba
 eine `index.html`, Cordova-Builds über GitHub Actions für den App Store und Google Play,
 Deutsch/Englisch mit Flaggen auf der Startseite, dunkles Design mit Hell-Modus für die Sonne.
 
-Arbeitstitel: **TurnierPro** (Deutsch) / **TourneyPro** (Englisch) – siehe „Umbenennen“ unten.
+App-Name: **TurnierPro** in allen Sprachen („TourneyPro“ war im App Store schon vergeben) – siehe „Umbenennen“ unten.
 
 ## Funktionen (Phase 1)
 
@@ -152,6 +152,12 @@ Die Workflows sind von PitchPro übernommen und angepasst (App-ID `de.turnierpro
   Bildschirm), `cordova-plugin-purchase` (Pro-Kauf); iOS zusätzlich `plugins/cordova-plugin-tp-mark` (Schlüsselbund),
   Android zusätzlich `plugins/cordova-plugin-tb-share`.
 - Eingebettete Bibliotheken: `fflate` 0.8.2 (MIT), `qrcode-generator` 1.4.4 (MIT), `jsQR` 1.4.0 (Apache-2.0).
+- **QR-Scanner:** zuerst der eingebaute `BarcodeDetector` (Android), sonst ZXing (`lib/tp-zxing.js` +
+  `lib/tp-zxing.wasm`, zxing-wasm 2.2.4, MIT/Apache-2.0, Lizenzen in `lib/LICENSES.txt`; iOS), und nur wenn
+  WebAssembly nicht startet jsQR. ZXing wird erst beim Scannen geladen. Dafür erlaubt die CSP
+  `'wasm-unsafe-eval'` (und für iOS 15–16.3 `'unsafe-eval'`); geladen wird weiterhin nur aus `'self'`.
+  Die Workflows kopieren `lib/` mit ins App-Paket. Kamera: Full HD, ausgewertet wird die Bildmitte in
+  voller Auflösung. Das Format der Codes (`TP3:…`) ist unverändert.
 - **iOS-Berechtigungen:** Kamera (`NSCameraUsageDescription`) und Fotos (`NSPhotoLibraryUsageDescription`)
   für Wappen/Mannschaftsfoto; der Workflow bricht ab, wenn ein Text fehlt.
 - **App-Name zweisprachig:** `tools/ios_localize.rb` bindet `l10n/ios/<sprache>.lproj/InfoPlist.strings`
@@ -161,7 +167,7 @@ Die Workflows sind von PitchPro übernommen und angepasst (App-ID `de.turnierpro
 - Icons: `image.png`, `icon_fg.png`, `icon_bg.png`, `icon_store.png`, `icon_maskable.png`
   (Platzhalter: Turnierbaum mit Pokal auf Rasen); `tools/` erzeugt daraus alle Größen.
 
-## Umbenennen (Name steht noch nicht fest)
+## Umbenennen
 
 Den Namen an diesen Stellen ändern: `config.xml` (`<name>`), `l10n/ios/de.lproj` und `en.lproj`
 (`InfoPlist.strings`), `l10n/android/values-en/strings.xml`, `index.html` (`appName` in beiden Sprachen,
