@@ -2,7 +2,7 @@
 # Bindet l10n/ios/<sprache>.lproj/InfoPlist.strings als lokalisierte Ressource
 # in das von Cordova erzeugte Xcode-Projekt ein. Damit zeigt iOS den App-Namen
 # und die Texte der Berechtigungsabfragen in der Geraetesprache an
-# (Deutsch: TurnierPro, Englisch: TourneyPro).
+# (TurnierPro in beiden Sprachen).
 #
 #   ruby tools/ios_localize.rb <build>/platforms/ios <repo>/l10n/ios
 #
