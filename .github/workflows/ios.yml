@@ -117,6 +117,8 @@ jobs:
           rm -rf build/www/*
           cp index.html manifest.json sw.js image.png icon_maskable.png build/www/
           cp datenschutz.html impressum.html datenschutz-en.html impressum-en.html build/www/
+          # QR-Scanner (ZXing als WebAssembly, wird erst beim Scannen geladen)
+          cp -r lib build/www/lib
           # Lokalisierte Texte (App-Name DE/EN); Android liest daraus values-en
           cp -r l10n build/l10n
 
@@ -155,8 +157,8 @@ jobs:
           # von diesen ueberschrieben werden.
           cordova prepare ios --no-telemetry
 
-      # App-Name und Berechtigungstexte zweisprachig: TurnierPro (Deutsch),
-      # TourneyPro (Englisch). Scheitert dieser Schritt, baut die App trotzdem -
+      # App-Name (TurnierPro) und Berechtigungstexte auf Deutsch und
+      # Englisch. Scheitert dieser Schritt, baut die App trotzdem -
       # dann nur mit dem deutschen Namen. Die Warnung steht in der Zusammenfassung.
       - name: App-Namen lokalisieren (DE/EN)
         working-directory: build

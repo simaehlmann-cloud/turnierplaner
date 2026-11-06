@@ -98,6 +98,8 @@ jobs:
         cp impressum.html app_build/www/impressum.html
         cp datenschutz-en.html app_build/www/datenschutz-en.html
         cp impressum-en.html app_build/www/impressum-en.html
+        # QR-Scanner (ZXing als WebAssembly, wird erst beim Scannen geladen)
+        cp -r lib app_build/www/lib
         cp config.xml app_build/config.xml
         # Englischer App-Name (values-en), siehe config.xml
         cp -r l10n app_build/l10n
