@@ -138,7 +138,7 @@ label.lb { display:block; font-size:13px; font-weight:700; color:var(--muted); m
 .step .lbl { font-size:16px; flex:1; }
 .step .lbl small { display:block; color:var(--muted); font-size:12px; }
 .step .ctl { display:flex; align-items:center; gap:6px; }
-.step .ctl button { width:42px; height:42px; border-radius:21px; background:var(--green-soft); color:var(--soft-ink); font-size:24px; font-weight:700; }
+.step .ctl button { width:48px; height:48px; border-radius:24px; background:var(--green-soft); color:var(--soft-ink); font-size:24px; font-weight:700; }
 .step .ctl button[disabled] { opacity:.3; pointer-events:none; }
 .step .val { min-width:62px; text-align:center; font-size:17px; font-weight:800; }
 .toggle { display:flex; align-items:center; gap:12px; padding:10px 0 4px; width:100%; text-align:left; }
@@ -160,6 +160,7 @@ label.lb { display:block; font-size:13px; font-weight:700; color:var(--muted); m
 .crit { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
 .crit:last-child { border-bottom:0; }
 .crit .n { width:24px; font-weight:900; color:var(--green); }
+.crit button { min-width:44px; min-height:44px; }
 .crit .l { flex:1; font-size:15px; font-weight:600; }
 .crit button { width:38px; height:34px; border-radius:8px; background:var(--surface2); font-size:16px; }
 
@@ -381,7 +382,7 @@ body.beam .wrap.wide { max-width:1600px; }
 const I18N = {
   de: {
     appName: 'TurnierPro', back: 'Zurück', cancel: 'Abbrechen', save: 'Speichern', del: 'Löschen', add: 'Hinzufügen', create: 'Anlegen',
-    remove: 'Entfernen', change: 'Ändern', choose: 'Auswählen', take: 'Übernehmen', optional: 'optional', later: 'Später', more: 'Mehr',
+    remove: 'Entfernen', stepDec: 'Weniger', stepInc: 'Mehr', moveUp: 'Nach oben', change: 'Ändern', choose: 'Auswählen', take: 'Übernehmen', optional: 'optional', later: 'Später', more: 'Mehr',
     continueBtn: 'Fortfahren', settings: 'Einstellungen', share: 'Teilen', version: 'Version',
     heroTitle: 'Turnier planen',
     heroText: 'Spielplan mit Feldern, Zeiten und Schiedsrichtern in Sekunden – für Verein, Schule, Sportunterricht und Kinderfußball. Komplett offline.',
@@ -603,7 +604,7 @@ const I18N = {
   },
   en: {
     appName: 'TurnierPro', back: 'Back', cancel: 'Cancel', save: 'Save', del: 'Delete', add: 'Add', create: 'Create',
-    remove: 'Remove', change: 'Change', choose: 'Choose', take: 'Apply', optional: 'optional', later: 'Later', more: 'More',
+    remove: 'Remove', stepDec: 'Less', stepInc: 'More', moveUp: 'Move up', change: 'Change', choose: 'Choose', take: 'Apply', optional: 'optional', later: 'Later', more: 'More',
     continueBtn: 'Continue', settings: 'Settings', share: 'Share', version: 'Version',
     heroTitle: 'Plan a tournament',
     heroText: 'A schedule with pitches, times and referees in seconds – for clubs, schools, PE lessons and kids football. Fully offline.',
@@ -2246,9 +2247,9 @@ function strengthPicker(a, v, extra){
 /* ----- Turnier einrichten ----- */
 function stepper(label, sub, k, val, min, max, step, fmt, dis){
   return '<div class="step' + (dis ? ' locked' : '') + '"><div class="lbl">' + esc(label) + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</div><div class="ctl">' +
-    '<button data-act="cfgStep" data-k="' + k + '" data-d="' + (-step) + '"' + (val <= min ? ' disabled' : '') + ' aria-label="−">−</button>' +
+    '<button data-act="cfgStep" data-k="' + k + '" data-d="' + (-step) + '"' + (val <= min ? ' disabled' : '') + ' aria-label="' + esc(T().stepDec) + '">−</button>' +
     '<span class="val num">' + esc(fmt ? fmt(val) : val) + '</span>' +
-    '<button data-act="cfgStep" data-k="' + k + '" data-d="' + step + '"' + (val >= max ? ' disabled' : '') + ' aria-label="+">+</button></div></div>';
+    '<button data-act="cfgStep" data-k="' + k + '" data-d="' + step + '"' + (val >= max ? ' disabled' : '') + ' aria-label="' + esc(T().stepInc) + '">+</button></div></div>';
 }
 function toggle(label, sub, a, on, extra, dis){
   return '<button class="toggle' + (dis ? ' locked' : '') + '" data-act="' + a + '"' + (extra || '') + '><span class="lbl">' + esc(label) + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>' +
@@ -2337,7 +2338,7 @@ function viewSetup(r){
   const avail = TB_KEYS.filter(k => k !== 'pdiff' || c.score === 'sets');
   const list = c.tb.filter(k => avail.indexOf(k) !== -1);
   h += list.map((k, i) => '<div class="crit"><span class="n">' + (i + 2) + '</span><span class="l">' + esc(critName(c, k)) + '</span>' +
-    '<button data-act="tbUp" data-k="' + k + '"' + (i === 0 ? ' disabled style="opacity:.3"' : '') + ' aria-label="↑">↑</button>' +
+    '<button data-act="tbUp" data-k="' + k + '"' + (i === 0 ? ' disabled style="opacity:.3"' : '') + ' aria-label="' + esc(t.moveUp) + '">↑</button>' +
     '<button data-act="tbDel" data-k="' + k + '" aria-label="' + esc(t.remove) + '">✕</button></div>').join('');
   const missing = avail.filter(k => list.indexOf(k) === -1);
   if(missing.length) h += '<div class="chips" style="margin-top:10px">' + missing.map(k => '<button class="chip" data-act="tbAdd" data-k="' + k + '">＋ ' + esc(critName(c, k)) + '</button>').join('') + '</div>';
@@ -3023,7 +3024,8 @@ function tick(){
     if(!k.f60 && rem <= 60000 && rem > 0 && clockDurMs(x, k) > 90000){ k.f60 = true; save(); if(x.cfg.sound && rem > 55000) signal('warn'); }
     if(!k.f0 && rem <= 0){ k.f0 = true; save(); if(rem > -5000){ if(x.cfg.sound) signal('end'); else vibrate([600, 200, 600]); } }
   });
-  keepAwake(running || cur().v === 'beamer');
+  // wach halten: laufende Uhr, Beamer, QR-Codes zeigen oder scannen
+  keepAwake(running || cur().v === 'beamer' || !!(QRSHOW && $('qr-box')) || !!(SCAN && SCAN.stream));
   tickExtras(now);
   const r = cur();
   if(r.v !== 'tour' || r.tab !== 'clock') return;
@@ -3492,7 +3494,7 @@ const A = {
   menuTeams(){
     const t = T(), x = curTour();
     openSheet(t.teamsActive, t.passiveText, x.teams.map(e => '<div class="trow' + (e.act ? '' : ' off') + '">' + logoHtml(e.id, tname(x, e.id), 32) +
-      '<span class="nm">' + esc(tname(x, e.id)) + '</span><button class="sw' + (e.act ? ' on' : '') + '" data-act="toggleActive" data-id="' + e.id + '"><i></i></button></div>').join(''));
+      '<span class="nm">' + esc(tname(x, e.id)) + '</span><button class="sw' + (e.act ? ' on' : '') + '" data-act="toggleActive" data-id="' + e.id + '" aria-label="' + esc(t.activeLbl + ': ' + tname(x, e.id)) + '"><i></i></button></div>').join(''));
   },
   toDraw(){
     const x = curTour();
@@ -4610,6 +4612,27 @@ function renderQrSheet(){
 }
 function stopQrShow(){ if(QRSHOW && QRSHOW.timer) clearInterval(QRSHOW.timer); QRSHOW = null; }
 
+/* Barrierefreiheit (Screenreader, Googles Pre-Launch-Bericht):
+   - Eingabefeld direkt unter einer Ueberschrift (label.lb) bekommt deren Text
+   - Schalter (.sw) melden sich als Schalter mit An/Aus-Zustand
+   Laeuft nach jeder Aenderung der Oberflaeche, nur fuer neue Elemente. */
+function a11yFix(root){
+  root.querySelectorAll('label.lb').forEach(l => {
+    let f = l.nextElementSibling;
+    if(f && !/^(INPUT|TEXTAREA|SELECT)$/.test(f.tagName)) f = f.querySelector && f.querySelector('input,textarea,select');
+    if(f && /^(INPUT|TEXTAREA|SELECT)$/.test(f.tagName) && !f.hasAttribute('aria-label')) f.setAttribute('aria-label', l.textContent.trim());
+  });
+  root.querySelectorAll('.sw').forEach(b => {
+    b.setAttribute('role', 'switch');
+    b.setAttribute('aria-checked', b.classList.contains('on') ? 'true' : 'false');
+  });
+}
+let a11yQ = false;
+new MutationObserver(ms => {
+  if(a11yQ || !ms.some(m => m.addedNodes.length || (m.attributeName === 'class' && m.target.classList && m.target.classList.contains('sw')))) return;
+  a11yQ = true;
+  requestAnimationFrame(() => { a11yQ = false; a11yFix(document); });
+}).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 /* Android-Geraet? (App: Cordova-Plattform; Browser/PWA: Kennung des Browsers) */
 function isAndroid(){
   return !!(window.cordova && window.cordova.platformId === 'android') || /Android/i.test(navigator.userAgent || '');
@@ -4880,6 +4903,10 @@ function initStore(){
   };
   store.when().approved(tx => tx.verify()).verified(rc => rc.finish()).finished(refresh).productUpdated(refresh).receiptUpdated(refresh);
   store.initialize([plat]).then(refresh).catch(() => {});
+  // Zurueck in der App (z. B. nach dem Einloesen eines Promo-Codes im Play
+  // Store oder einem Kauf auf einem anderen Geraet): Kaeufe neu abfragen.
+  // Unbestaetigte Kaeufe laufen dabei durch approved -> finish.
+  document.addEventListener('resume', () => { try { store.update(); } catch(e){} }, false);
 }
 function paywallBody(feature){
   const t = T();
