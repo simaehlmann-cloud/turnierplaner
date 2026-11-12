@@ -405,7 +405,7 @@ const I18N = {
       '<b>Wertung frei einstellbar:</b> Tore, Punkte oder Sätze, Punkte für Sieg/Unentschieden/Niederlage und die Reihenfolge bei Gleichstand (z. B. direkter Vergleich).',
       '<b>Während des Turniers:</b> Ergebnisse antippen, Tabellen rechnen sich selbst. Die Turnieruhr gibt Signale bei Anpfiff, letzter Minute und Ende. Fällt ein Team aus, schalte es auf passiv.',
       '<b>Kinderfußball:</b> Champions-League-System über die Felder – Sieger rücken hoch, Verlierer runter, bei ungerader Zahl pausieren Teams reihum. Ergebnisse lassen sich ausblenden.',
-      '<b>Urkunden & Siegerehrung:</b> Platzierungs-, Teilnahme- und Kinder-Urkunden als PDF oder mit deiner eigenen Word-Vorlage; Siegerehrung mit Fanfare; Beamer-Modus für Zuschauer.',
+      '<b>Urkunden & Siegerehrung:</b> Platzierungs-, Torschützenkönig-, Teilnahme- und Kinder-Urkunden als PDF oder mit deiner eigenen Word-Vorlage; Siegerehrung mit Fanfare und Torschützenkönig; Beamer-Modus für Zuschauer.',
       '<b>Teilen:</b> Stand, Spielplan oder nächste Runde als Text für WhatsApp oder als Bild; Spielzettel zum Ausdrucken.',
       '<b>Datenschutz:</b> Alles bleibt auf deinem Gerät. Kein Konto, keine Werbung, kein Tracking.'
     ],
@@ -539,7 +539,7 @@ const I18N = {
     sndTitle: 'Signalton', snd_whistle: 'Schiri-Pfiff', snd_horn: 'Hupe', snd_ship: 'Schiffshorn', snd_airhorn: 'Stadion-Fanfare', snd_siren: 'Hallen-Sirene', snd_gong: 'Gong', snd_custom: 'Eigener Ton',
     sndStart: 'Anpfiff', sndWarn: 'Letzte Minute', sndEnd: 'Abpfiff', sndCustomHint: 'Eigene Audiodateien (z. B. MP3, max. 2,5 MB). Ohne Datei klingt der Schiri-Pfiff.',
     sndOwn: 'eigene Datei', sndFallback: 'Standard (Pfiff)', sndTooBig: 'Datei zu groß (max. 2,5 MB).', sndDecodeFail: 'Audiodatei kann nicht abgespielt werden.',
-    certs: 'Urkunden', certsHint: 'Platzierung, Teilnahme oder pro Kind – als PDF oder Word', certSettings: 'Urkunden-Vorlagen', certSettingsShort: 'Design, Texte, Logo, Word-Vorlage',
+    certs: 'Urkunden', certsHint: 'Platzierung, Torschützenkönig, Teilnahme oder pro Kind – als PDF oder Word', certSettings: 'Urkunden-Vorlagen', certSettingsShort: 'Design, Texte, Logo, Word-Vorlage',
     certSettingsHint: 'So sehen deine Urkunden aus. Die Einstellungen gelten für alle Turniere.', certDesign: 'Design',
     certD_classic: 'Klassisch', certD_kids: 'Kinder bunt', certD_school: 'Schule schlicht', certD_image: 'Eigenes Bild', certColor: 'Farbe',
     certBg: 'Hintergrundbild', certBgHint: 'z. B. eure gestaltete Vereinsurkunde (Hochformat A4). Die Texte werden darübergeschrieben.', certTextColor: 'Textfarbe',
@@ -547,9 +547,12 @@ const I18N = {
     certTeamLogo: 'Wappen des Teams zeigen', certPhoto: 'Mannschaftsfoto zeigen', certPhotoSub: 'wenn beim Team hinterlegt',
     certSigs: 'Unterschriften & Ort', certSig1: 'Unterschrift links', certSig2: 'Unterschrift rechts', certSigDef1: 'Turnierleitung', certSigDef2: 'Trainer/in',
     certPlace: 'Ort', certSigHint: 'Feld leeren, um die Unterschriftslinie wegzulassen.', certTexts: 'Texte',
-    certT_place: 'Platzierung', certT_team: 'Teilnahme (Team)', certT_player: 'Pro Kind',
+    certT_place: 'Platzierung', certT_team: 'Teilnahme (Team)', certT_player: 'Pro Kind', certT_scorer: 'Torschützenkönig',
+    topScorer: 'Torschützenkönig', goalsLbl: n => n === 1 ? '1 Tor' : n + ' Tore', goalsDat: n => n === 1 ? '1 Tor' : n + ' Toren', certNoScorer: 'Noch keine Torschützen eingetragen.',
+    demoBtn: 'Beispielturnier ansehen', demoHint: 'Ein fertiges Turnier zum Ausprobieren – zählt nicht als dein Gratis-Turnier.', demoName: 'Beispiel: Hallencup', demoTag: 'Beispiel',
+    demoBanner: 'Beispielturnier zum Ausprobieren: Ergebnisse eintragen, Uhr, Tabellen, Siegerehrung und Urkunden testen. Teams und Modus sind fest – für ein eigenes Turnier tippe auf der Startseite auf „Neues Turnier“.', demoLocked: 'Im Beispielturnier sind Teams und Modus fest. Kopiere es über ⋯ als Vorlage, um es zu ändern.', demoCreated: 'Beispielturnier angelegt',
     certF_title: 'Überschrift', certF_top: 'Text oben', certF_big: 'Große Zeile', certF_name: 'Name', certF_bottom: 'Text unten',
-    certPhHint: 'Platzhalter: {{TEAM}} {{PLATZ}} {{TURNIER}} {{DATUM}} {{SPIELER}} {{VEREIN}} {{ORT}}', certReset: 'Standardtexte', certResetDone: 'Standardtexte wiederhergestellt.',
+    certPhHint: 'Platzhalter: {{TEAM}} {{PLATZ}} {{TURNIER}} {{DATUM}} {{SPIELER}} {{VEREIN}} {{ORT}} {{TORE}}', certReset: 'Standardtexte', certResetDone: 'Standardtexte wiederhergestellt.',
     certWord: 'Word-Vorlage', certWordHint: 'Lade die Beispiel-Vorlage herunter, gestalte sie in Word (Platzhalter wie {{TEAM}} stehen lassen) und lade sie wieder hoch. Die App füllt sie aus – eine Seite pro Urkunde.',
     certWordOwn: 'Eigene Vorlage aktiv', certWordSample: 'Es wird die Beispiel-Vorlage verwendet.', certWordDl: 'Beispiel herunterladen', certWordUp: 'Vorlage hochladen',
     docxSampleName: 'TurnierPro_Urkunde_Vorlage', docxTooBig: 'Datei zu groß (max. 6 MB).', docxBad: 'Das ist keine gültige Word-Datei (.docx).',
@@ -560,6 +563,7 @@ const I18N = {
     certNone: 'Keine Urkunden – es gibt noch keine Platzierungen.', certNoPlayers: 'Keine Spieler hinterlegt – Kader unter „Meine Teams“ oder im Turnier ergänzen.',
     certMaking: n => n + ' Urkunden werden erstellt …', certFile: 'Urkunden', placeLbl: p => p + '. Platz', participation: 'Teilnahme', sampleTour: 'Hallenturnier',
     certDef: {
+      scorer: { title: 'Urkunde', top: 'Beim {{TURNIER}} am {{DATUM}} wurde', big: '{{SPIELER}}', name: '{{TEAM}}', bottom: 'mit {{TORE}} Torschützenkönig. Herzlichen Glückwunsch!' },
       place: { title: 'Urkunde', top: 'Beim {{TURNIER}} am {{DATUM}} belegte', big: '{{PLATZ}}', name: '{{TEAM}}', bottom: 'Herzlichen Glückwunsch!' },
       team: { title: 'Urkunde', top: 'Beim {{TURNIER}} am {{DATUM}} hat', big: '{{TEAM}}', name: '', bottom: 'erfolgreich teilgenommen. Toll gespielt!' },
       player: { title: 'Urkunde', top: 'Beim {{TURNIER}} am {{DATUM}} hat', big: '{{SPIELER}}', name: 'vom Team {{TEAM}}', bottom: 'erfolgreich teilgenommen. Toll gespielt!' }
@@ -627,7 +631,7 @@ const I18N = {
       '<b>Flexible scoring:</b> goals, points or sets, points for win/draw/loss and the tie-break order (e.g. head-to-head).',
       '<b>During the tournament:</b> tap results, tables update themselves. The tournament clock signals kick-off, last minute and end. If a team drops out, set it to inactive.',
       '<b>Kids football:</b> ladder system across the pitches – winners move up, losers down, with an odd number teams rest in turn. Results can be hidden.',
-      '<b>Certificates & ceremony:</b> placing, participation and per-child certificates as PDF or with your own Word template; award ceremony with fanfare; projector mode for spectators.',
+      '<b>Certificates & ceremony:</b> placing, top scorer, participation and per-child certificates as PDF or with your own Word template; award ceremony with fanfare and top scorer; projector mode for spectators.',
       '<b>Sharing:</b> standings, schedule or next round as text for WhatsApp or as a picture; printable match sheets.',
       '<b>Privacy:</b> everything stays on your device. No account, no ads, no tracking.'
     ],
@@ -755,7 +759,7 @@ const I18N = {
     sndTitle: 'Signal sound', snd_whistle: 'Referee whistle', snd_horn: 'Horn', snd_ship: 'Ship horn', snd_airhorn: 'Stadium air horn', snd_siren: 'Hall buzzer', snd_gong: 'Gong', snd_custom: 'Own sound',
     sndStart: 'Kick-off', sndWarn: 'Last minute', sndEnd: 'Final whistle', sndCustomHint: 'Your own audio files (e.g. MP3, max. 2.5 MB). Without a file the whistle sounds.',
     sndOwn: 'own file', sndFallback: 'default (whistle)', sndTooBig: 'File too large (max. 2.5 MB).', sndDecodeFail: 'Audio file cannot be played.',
-    certs: 'Certificates', certsHint: 'Placing, participation or per child – as PDF or Word', certSettings: 'Certificate templates', certSettingsShort: 'Design, texts, logo, Word template',
+    certs: 'Certificates', certsHint: 'Placing, top scorer, participation or per child – as PDF or Word', certSettings: 'Certificate templates', certSettingsShort: 'Design, texts, logo, Word template',
     certSettingsHint: 'This is how your certificates look. The settings apply to all tournaments.', certDesign: 'Design',
     certD_classic: 'Classic', certD_kids: 'Kids colourful', certD_school: 'School plain', certD_image: 'Own picture', certColor: 'Colour',
     certBg: 'Background picture', certBgHint: 'e.g. your club’s designed certificate (portrait A4). The texts are written on top.', certTextColor: 'Text colour',
@@ -763,9 +767,12 @@ const I18N = {
     certTeamLogo: 'Show team crest', certPhoto: 'Show team photo', certPhotoSub: 'if stored for the team',
     certSigs: 'Signatures & place', certSig1: 'Signature left', certSig2: 'Signature right', certSigDef1: 'Tournament director', certSigDef2: 'Coach',
     certPlace: 'Place', certSigHint: 'Clear a field to leave out the signature line.', certTexts: 'Texts',
-    certT_place: 'Placing', certT_team: 'Participation (team)', certT_player: 'Per child',
+    certT_place: 'Placing', certT_team: 'Participation (team)', certT_player: 'Per child', certT_scorer: 'Top scorer',
+    topScorer: 'Top scorer', goalsLbl: n => n === 1 ? '1 goal' : n + ' goals', goalsDat: n => n === 1 ? '1 goal' : n + ' goals', certNoScorer: 'No scorers recorded yet.',
+    demoBtn: 'Open example tournament', demoHint: 'A ready-made tournament to try out – it does not count as your free tournament.', demoName: 'Example: Indoor Cup', demoTag: 'Example',
+    demoBanner: 'Example tournament to try out: enter results, test the clock, tables, award ceremony and certificates. Teams and format are fixed – for your own tournament tap “New tournament” on the home screen.', demoLocked: 'Teams and format are fixed in the example tournament. Copy it as a template via ⋯ to change them.', demoCreated: 'Example tournament created',
     certF_title: 'Heading', certF_top: 'Text above', certF_big: 'Large line', certF_name: 'Name', certF_bottom: 'Text below',
-    certPhHint: 'Placeholders: {{TEAM}} {{PLACE}} {{TOURNAMENT}} {{DATE}} {{PLAYER}} {{CLUB}} {{CITY}}', certReset: 'Default texts', certResetDone: 'Default texts restored.',
+    certPhHint: 'Placeholders: {{TEAM}} {{PLACE}} {{TOURNAMENT}} {{DATE}} {{PLAYER}} {{CLUB}} {{CITY}} {{GOALS}}', certReset: 'Default texts', certResetDone: 'Default texts restored.',
     certWord: 'Word template', certWordHint: 'Download the sample template, design it in Word (keep placeholders like {{TEAM}}) and upload it again. The app fills it in – one page per certificate.',
     certWordOwn: 'Own template active', certWordSample: 'The sample template is used.', certWordDl: 'Download sample', certWordUp: 'Upload template',
     docxSampleName: 'TurnierPro_certificate_template', docxTooBig: 'File too large (max. 6 MB).', docxBad: 'This is not a valid Word file (.docx).',
@@ -776,6 +783,7 @@ const I18N = {
     certNone: 'No certificates – there are no placings yet.', certNoPlayers: 'No players stored – add squads under “My teams” or in the tournament.',
     certMaking: n => 'Creating ' + n + ' certificates …', certFile: 'Certificates', placeLbl: p => p + (p % 10 === 1 && p !== 11 ? 'st' : p % 10 === 2 && p !== 12 ? 'nd' : p % 10 === 3 && p !== 13 ? 'rd' : 'th') + ' place', participation: 'Participation', sampleTour: 'Indoor tournament',
     certDef: {
+      scorer: { title: 'Certificate', top: 'At the {{TURNIER}} on {{DATUM}}', big: '{{SPIELER}}', name: '{{TEAM}}', bottom: 'was top scorer with {{TORE}}. Congratulations!' },
       place: { title: 'Certificate', top: 'At the {{TURNIER}} on {{DATUM}}', big: '{{PLATZ}}', name: '{{TEAM}}', bottom: 'Congratulations!' },
       team: { title: 'Certificate', top: 'At the {{TURNIER}} on {{DATUM}}', big: '{{TEAM}}', name: '', bottom: 'took part successfully. Well played!' },
       player: { title: 'Certificate', top: 'At the {{TURNIER}} on {{DATUM}}', big: '{{SPIELER}}', name: 'of team {{TEAM}}', bottom: 'took part successfully. Well played!' }
@@ -863,7 +871,7 @@ function fmtDate(s){
    DATEN (localStorage)
 --------------------------------------------------------------------- */
 const DATA_KEY = 'turnierpro_data';
-const APP_VERSION = '1.0.0';   // gleich halten mit version="..." in config.xml
+const APP_VERSION = '1.1.0';   // gleich halten mit version="..." in config.xml
 const DEFAULT_CFG = {
   mode: 'groups',          // 'league' | 'groups' | 'ko' | 'kids'
   fields: 2, fieldStyle: 'num', fieldNames: [],
@@ -997,7 +1005,7 @@ function cleanTour(t){
 const SOUNDS = ['whistle', 'horn', 'ship', 'airhorn', 'siren', 'gong', 'custom'];
 const CERT_DESIGNS = ['classic', 'kids', 'school', 'image'];
 const CERT_COLORS = ['#1f6b2a', '#0d47a1', '#b71c1c', '#6a1b9a', '#e65100', '#212121'];
-const CERT_TYPES = ['place', 'team', 'player'];
+const CERT_TYPES = ['place', 'scorer', 'team', 'player'];
 const CERT_FIELDS = ['title', 'top', 'big', 'name', 'bottom'];
 function cleanPrefs(p){
   p = p && typeof p === 'object' ? p : {};
@@ -1031,7 +1039,7 @@ function cleanTpl(x){
 function load(){
   let raw = null;
   try { raw = JSON.parse(localStorage.getItem(DATA_KEY) || 'null'); } catch(e){ raw = null; }
-  const d = { v: 1, teams: [], tours: [], lastCfg: null, lastBackupAt: 0, backupSnooze: 0, prefs: cleanPrefs(null), tpls: [], freeId: '' };
+  const d = { v: 1, teams: [], tours: [], lastCfg: null, lastBackupAt: 0, backupSnooze: 0, prefs: cleanPrefs(null), tpls: [], freeId: '', demoId: '' };
   if(!raw || typeof raw !== 'object') return d;
   d.teams = (Array.isArray(raw.teams) ? raw.teams : []).map(cleanTeam).filter(Boolean);
   d.tours = (Array.isArray(raw.tours) ? raw.tours : []).map(cleanTour).filter(Boolean);
@@ -1041,6 +1049,7 @@ function load(){
   d.prefs = cleanPrefs(raw.prefs);
   d.pro = raw.pro === true;
   d.freeId = cleanId(raw.freeId) || '';
+  d.demoId = cleanId(raw.demoId) || '';
   d.tpls = (Array.isArray(raw.tpls) ? raw.tpls : []).slice(0, 50).map(cleanTpl).filter(Boolean);
   return d;
 }
@@ -1053,6 +1062,8 @@ function save(){
 }
 const teamById = id => DB.teams.find(x => x.id === id);
 const tourById = id => DB.tours.find(x => x.id === id);
+/* Beispielturnier: nur ueber DB.demoId erkennbar (wird nie importiert oder gesichert) */
+const isDemo = x => !!(x && DB.demoId && x.id === DB.demoId);
 const entry = (t, id) => t.teams.find(x => x.id === id);
 /* Teamname im Turnier: verknuepfte Teams folgen Aenderungen in "Teams",
    abgeschlossene Turniere behalten den Namen von damals. */
@@ -2129,6 +2140,7 @@ function renderNow(resetScroll){
   if((['setup', 'draw', 'tour', 'beamer'].indexOf(r.v) !== -1 && !tourById(r.id)) || (r.v === 'team' && !teamById(r.id))){
     STACK = [{ v: 'home' }]; r = cur();
   }
+  if((r.v === 'setup' || r.v === 'draw') && isDemo(tourById(r.id))){ r.v = 'tour'; r.tab = 'plan'; toast(T().demoLocked); }
   const view = $('view');
   const keep = view.scrollTop;
   let html = '', wide = false;
@@ -2162,7 +2174,8 @@ function viewHome(){
     '<div class="hint" style="font-size:15px;margin:6px 0 16px">' + esc(t.heroText) + '</div>' +
     '<button class="btn lg" data-act="newTourPick">＋ ' + esc(t.newTour) + '</button>' +
     '<div class="row2" style="margin-top:8px"><button class="btn soft" data-act="goTeams">👥 ' + esc(t.myTeams) + (DB.teams.length ? ' (' + DB.teams.length + ')' : '') + '</button>' +
-    '<button class="btn soft" data-act="receive">📥 ' + esc(t.receive) + '</button></div></div>';
+    '<button class="btn soft" data-act="receive">📥 ' + esc(t.receive) + '</button></div>' +
+    (tourById(DB.demoId) ? '' : '<button class="btn ghost" data-act="demoOpen" style="margin-top:8px">▶ ' + esc(t.demoBtn) + '</button><div class="hint" style="text-align:center;margin-top:2px">' + esc(t.demoHint) + '</div>') + '</div>';
   if(backupDue()) h += '<div class="warn" style="margin-top:12px"><b>' + esc(t.backupDueTitle) + '</b><br>' + esc(t.backupDueText) +
     '<div class="row2" style="margin-top:10px"><button class="btn sm" data-act="backupExport">' + esc(t.backupNow) + '</button>' +
     '<button class="btn sm ghost" data-act="backupLater">' + esc(t.later) + '</button></div></div>';
@@ -2184,11 +2197,11 @@ function tourRow(x){
   else right = '<span class="badge a">' + esc(t.draft) + '</span>';
   let winner = '';
   if(x.done && A && A.rank[0] && A.rank[0].pos === 1 && !kidsQuick(x)) winner = ' · 🥇 ' + tname(x, A.rank[0].id);
-  return '<button class="list-row" data-act="openTour" data-id="' + x.id + '"><div class="main"><div class="t1">' + esc(x.name) + '</div>' +
+  return '<button class="list-row" data-act="openTour" data-id="' + x.id + '"><div class="main"><div class="t1">' + esc(x.name) + (isDemo(x) ? ' <span class="badge">' + esc(t.demoTag) + '</span>' : '') + '</div>' +
     '<div class="t2">' + esc(fmtDate(x.date) + ' · ' + modeName(x.cfg.mode) + ' · ' + t.nTeams(n) + winner) + '</div></div>' + right + '</button>';
 }
 function backupDue(){
-  if(DB.tours.length < 2) return false;
+  if(DB.tours.filter(x => !isDemo(x)).length < 2) return false;
   if(Date.now() < (DB.backupSnooze || 0)) return false;
   return !DB.lastBackupAt || Date.now() - DB.lastBackupAt > 30 * 86400000;
 }
@@ -2430,9 +2443,10 @@ function viewTour(r){
   r.tab = r.tab || 'plan';
   setTop(x.name, { label: '⋯', act: 'tourMenu', aria: t.more }, { label: '↗', act: 'shareMenu', aria: t.share });
   setTabs([{ k: 'plan', l: t.tabPlan }, { k: 'table', l: t.tabTable }, { k: 'clock', l: t.tabClock }], r.tab);
-  if(r.tab === 'table') return viewTables(x);
-  if(r.tab === 'clock') return viewClock(x);
-  return viewPlan(x, r);
+  const pre = isDemo(x) ? '<div class="card" style="border:1px solid var(--line)"><div class="hint" style="margin:0">ℹ︎ ' + esc(t.demoBanner) + '</div></div>' : '';
+  if(r.tab === 'table') return pre + viewTables(x);
+  if(r.tab === 'clock') return pre + viewClock(x);
+  return pre + viewPlan(x, r);
 }
 /* aktuelles Zeitfenster = erstes mit offenen Spielen */
 function currentSlot(x, A){
@@ -3086,6 +3100,8 @@ function shareTextFor(x, kind){
   });
   if(A.stats && A.stats.scorers.length && !kidsQuick(x)){
     s += '\n⚽ *' + t.scorers + '*\n';
+    const top = topScorers(A);
+    if(top.length && (x.done || A.rankDone)) s += '👑 ' + t.topScorer + ': ' + top.map(q => q.n + ' (' + tname(x, q.team) + ')').join(', ') + ' – ' + t.goalsLbl(top[0].goals) + '\n';
     A.stats.scorers.slice(0, 5).forEach(q => { s += q.goals + ' – ' + q.n + ' (' + tname(x, q.team) + ')\n'; });
   }
   const ko = x.matches.filter(m => m.ph === 'ko' && (A.st[m.id] === 'done' || A.st[m.id] === 'wo'));
@@ -3183,7 +3199,7 @@ function imageBlocks(x, kind){
    SICHERUNG
    ===================================================================== */
 async function backupExport(){
-  const data = { app: 'turnierpro', v: 1, at: new Date().toISOString(), teams: DB.teams, tours: DB.tours, images: Object.assign({}, IMG), freeId: DB.freeId || undefined };
+  const data = { app: 'turnierpro', v: 1, at: new Date().toISOString(), teams: DB.teams, tours: DB.tours.filter(x => !isDemo(x)), images: Object.assign({}, IMG), freeId: DB.freeId || undefined };
   try {
     const r = await saveBlob(new Blob([JSON.stringify(data)], { type: 'application/json' }), fileName('TurnierPro_Sicherung'), 'application/json');
     if(r === 'abbruch') return;
@@ -3216,6 +3232,43 @@ function backupImport(data){
 let DSEL = null;       // in der Auslosung angetipptes Team (Tippen statt Ziehen)
 let DRAG = null;
 let QUICK = { n: 8, p: '' };
+/* Beispielturnier: 8 erfundene Teams, 2 Gruppen, Gruppenphase gespielt, Finalrunde offen */
+let DEMO_SEED = 18;
+function makeDemo(){
+  const t = T();
+  const defs = LANG === 'de' ? [
+    ['FC Blau-Weiß Mühlbrook', 5, ['Jonas', 'Mats', 'Lea', 'Finn', 'Emil', 'Noah']], ['SV Eichenhain', 4, ['Ben', 'Mia', 'Paul', 'Luis', 'Ida', 'Tom']],
+    ['TSV Rosenfelde', 4, ['Elias', 'Lina', 'Henri', 'Ole', 'Jana', 'Max']], ['TuS Birkenstedt', 3, ['Leon', 'Emma', 'Theo', 'Nils', 'Pia', 'Jan']],
+    ['SC Wiesenbach 09', 3, ['Anton', 'Luca', 'Mila', 'Karl', 'Tim', 'Ella']], ['FC Sonnenhang', 2, ['Lukas', 'Moritz', 'Greta', 'Felix', 'Lotte', 'Jakob']],
+    ['SG Lerchenfeld', 3, ['David', 'Hanna', 'Erik', 'Sophie', 'Linus', 'Frieda']], ['VfL Hollerbrook', 2, ['Julian', 'Clara', 'Bastian', 'Marie', 'Till', 'Nele']]
+  ] : [
+    ['Riverside FC', 5, ['Oliver', 'Jack', 'Amelia', 'Harry', 'Isla', 'Leo']], ['Hillcrest United', 4, ['George', 'Ava', 'Noah', 'Freddie', 'Mia', 'Alfie']],
+    ['Northgate Rovers', 4, ['Charlie', 'Grace', 'Arthur', 'Theo', 'Ivy', 'Oscar']], ['Westbrook Town', 3, ['Henry', 'Lily', 'Archie', 'Jacob', 'Rosie', 'Max']],
+    ['Oakfield Athletic', 3, ['Lucas', 'Ella', 'Ethan', 'Finn', 'Evie', 'Sam']], ['Lakeside Lions', 2, ['Toby', 'Poppy', 'Harrison', 'Ruby', 'Joe', 'Daisy']],
+    ['Kingsley Park', 3, ['Adam', 'Florence', 'Dylan', 'Sophie', 'Ryan', 'Alice']], ['Ashford City', 2, ['Mason', 'Chloe', 'Louis', 'Ellie', 'Reuben', 'Hallie']]
+  ];
+  const x = newTourObj();
+  x.name = t.demoName;
+  x.cfg = cleanCfg(Object.assign({}, DEFAULT_CFG, { mode: 'groups', fields: 2, gCount: 2, adv: 2, best: 0, p3: true, place: false, start: '10:00', dur: 10, brk: 2,
+    koDur: 10, koPause: 5, legs: 1, score: 'goals', draw: true, refs: 'teams', seed: 'fair', events: true }));
+  x.teams = defs.map(d => ({ id: uid(), ref: false, name: d[0], club: '', str: d[1], act: true, players: d[2].map((n, i) => ({ id: uid(), name: n, nr: i + 1 })) }));
+  // feste Auslosung und Ergebnisse: das Beispiel sieht immer gleich aus
+  let sd = DEMO_SEED;
+  const rnd = () => { sd = (sd * 9301 + 49297) % 233280; return sd / 233280; };
+  Engine.setRandom(rnd);
+  try { doDraw(x); Engine.build(x); } finally { Engine.setRandom(Math.random); }
+  const team = id => x.teams.find(e => e.id === id);
+  x.matches.filter(m => m.ph !== 'ko' && m.h && m.a).forEach(m => {
+    const sh = team(m.h).str, sa = team(m.a).str;
+    const gh = Math.max(0, Math.round(rnd() * 2.2 + (sh - sa) * 0.6)), ga = Math.max(0, Math.round(rnd() * 2 + (sa - sh) * 0.6));
+    m.res = { h: gh, a: ga }; m.ev = [];
+    [['h', m.h, gh], ['a', m.a, ga]].forEach(([side, id, g]) => {
+      for(let i = 0; i < g; i++){ const pl = team(id).players[Math.floor(rnd() * 4)]; m.ev.push({ id: uid(), k: 'goal', s: side, p: pl.id, n: pl.name, min: 1 + Math.floor(rnd() * 9), at: null }); }
+    });
+  });
+  DB.tours.push(x); DB.demoId = x.id; save();
+  return x;
+}
 function newTourObj(){
   const t = T();
   return { id: uid(), name: t.defaultTourName(fmtDate(todayStr())), date: todayStr(), created: Date.now(), done: false,
@@ -3400,6 +3453,11 @@ const A = {
   },
 
   /* ----- Turnier anlegen und einstellen ----- */
+  demoOpen(){
+    let x = tourById(DB.demoId);
+    if(!x){ x = makeDemo(); toast(T().demoCreated); }
+    go({ v: 'tour', id: x.id, tab: 'table' });
+  },
   newTour(){ if(needProNew()) return; const x = newTourObj(); DB.tours.push(x); save(); go({ v: 'setup', id: x.id }); },
   openTour(el){ const x = tourById(el.dataset.id); go(built(x) ? { v: 'tour', id: x.id, tab: 'plan' } : { v: 'setup', id: x.id }); },
   goSetup(){ go({ v: 'setup', id: cur().id }); },
@@ -3549,16 +3607,16 @@ const A = {
     openSheet(x.name, fmtDate(x.date) + ' · ' + (built(x) ? modeName(x.cfg.mode) : t.draft),
       (here ? '' : act('openTour', '▶', t.lpOpen, '', d)) +
       act('dupTour', '⧉', t.dupTour, t.dupHint, d) +
-      (built(x) ? act('handover', '📤', t.handover, t.handoverShort, d) : '') +
+      (built(x) && !isDemo(x) ? act('handover', '📤', t.handover, t.handoverShort, d) : '') +
       act('delTour', '🗑', t.delTour, '', d));
   },
   draftMenu(){ A.tourLong({ dataset: { id: cur().id } }); },
   tourMenu(){
     const t = T(), x = curTour();
     openSheet(x.name, fmtDate(x.date) + ' · ' + modeName(x.cfg.mode),
-      act('menuTeams', '👥', t.teamsActive, t.teamsActiveHint) + act('goSetup', '⚙︎', t.settingsTour, t.settingsTourHint) +
+      (isDemo(x) ? '' : act('menuTeams', '👥', t.teamsActive, t.teamsActiveHint) + act('goSetup', '⚙︎', t.settingsTour, t.settingsTourHint)) +
       act('finishTour', x.done ? '↺' : '🏆', x.done ? t.reopen : t.finishTour, x.done ? '' : t.finishHint) +
-      act('handover', '📤', t.handover, t.handoverShort) +
+      (isDemo(x) ? '' : act('handover', '📤', t.handover, t.handoverShort)) +
       act('certs', '🏅', t.certs, t.certsHint) + act('ceremony', '🎉', t.ceremony, t.ceremonyHint) +
       act('beamer', '📺', t.beamerMode, t.beamerHint) + act('slips', '🖨', t.slips, t.slipsHint) +
       act('dupTour', '⧉', t.dupTour, t.dupHint) + act('saveTpl', '💾', t.saveTpl, t.saveTplHint) + act('delTour', '🗑', t.delTour, ''));
@@ -3752,8 +3810,8 @@ function wrapLines(cx, text, maxW, maxLines){
    {{SPIELER}} {{VEREIN}} {{ORT}} (englisch auch TEAM, PLACE, TOURNAMENT,
    DATE, PLAYER, CLUB, CITY)
    ===================================================================== */
-const PH_ALIAS = { PLACE: 'PLATZ', TOURNAMENT: 'TURNIER', DATE: 'DATUM', PLAYER: 'SPIELER', CLUB: 'VEREIN', CITY: 'ORT' };
-const PH_KEYS = ['TEAM', 'PLATZ', 'TURNIER', 'DATUM', 'SPIELER', 'VEREIN', 'ORT'].concat(Object.keys(PH_ALIAS));
+const PH_ALIAS = { PLACE: 'PLATZ', TOURNAMENT: 'TURNIER', DATE: 'DATUM', PLAYER: 'SPIELER', CLUB: 'VEREIN', CITY: 'ORT', GOALS: 'TORE' };
+const PH_KEYS = ['TEAM', 'PLATZ', 'TURNIER', 'DATUM', 'SPIELER', 'VEREIN', 'ORT', 'TORE'].concat(Object.keys(PH_ALIAS));
 function phVal(d, k){ k = k.toUpperCase(); k = PH_ALIAS[k] || k; return d[k] != null ? String(d[k]) : ''; }
 const fillPh = (s, d) => String(s || '').replace(/\{\{\s*([A-Za-zÄÖÜäöü]+)\s*\}\}/g, (m, k) => PH_KEYS.indexOf(k.toUpperCase()) !== -1 ? phVal(d, k) : m).replace(/\s+/g, ' ').trim();
 function certTexts(type){ return Object.assign({}, T().certDef[type], DB.prefs.cert.texts[type] || {}); }
@@ -3772,6 +3830,7 @@ function certList(x, type, upTo){
     if(hide) return [];
     return A.rank.filter(r => r.pos <= upTo).map(r => mk(r.id, { PLATZ: t.placeLbl(r.pos), pos: r.pos }));
   }
+  if(type === 'scorer') return topScorers(A).map(q => mk(q.team, { SPIELER: q.n, PLATZ: t.topScorer + ' – ' + t.goalsLbl(q.goals), TORE: t.goalsDat(q.goals) }));
   const teams = x.teams.filter(e => e.act).map(e => e.id);
   const order = hide ? teams.slice().sort((a, b) => tname(x, a).localeCompare(tname(x, b))) :
     A.rank.map(r => r.id).filter(id => teams.indexOf(id) !== -1).concat(teams.filter(id => !posOf[id]));
@@ -4025,6 +4084,12 @@ function openShow(x){
   let order;
   if(kidsQuick(x) || !A.rank.length) order = x.teams.filter(e => e.act).map(e => ({ id: e.id, pos: null })).sort((a, b) => tname(x, a.id).localeCompare(tname(x, b.id)));
   else order = A.rank.slice().reverse().map(r => ({ id: r.id, pos: r.pos }));
+  const top = topScorers(A);
+  if(top.length){
+    const k = { scorer: top, id: top[0].team, pos: null };
+    const at = order.length && order[order.length - 1].pos === 1 ? order.findIndex(r => r.pos === 1) : order.length;
+    order.splice(at, 0, k);
+  }
   SHOW = { id: x.id, order, i: -1 };
   let el = $('show');
   if(!el){ el = document.createElement('div'); el.id = 'show'; document.body.appendChild(el); }
@@ -4049,11 +4114,18 @@ function renderShow(){
       h += '<div class="sht">' + esc(t.showChamp) + '</div><div class="podium big">' + col(top[1], 2, 120, 'var(--silver)') + col(top[0], 1, 170, 'var(--gold)') + col(top[2], 3, 90, 'var(--bronze)') + '</div>';
     } else {
       h += '<div class="sht">🏅 ' + esc(t.showAllWin) + '</div><div class="chips" style="justify-content:center;gap:14px">' +
-        o.map(r => '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:110px">' + logoHtml(r.id, tname(x, r.id), 64) + '<b style="font-size:15px">' + esc(tname(x, r.id)) + '</b></div>').join('') + '</div>';
+        o.filter(r => !r.scorer).map(r => '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:110px">' + logoHtml(r.id, tname(x, r.id), 64) + '<b style="font-size:15px">' + esc(tname(x, r.id)) + '</b></div>').join('') + '</div>';
     }
     h += '<div class="shs">' + esc(t.showCongrats) + '</div>' + confetti;
   } else {
     const r = o[i], photo = IMG[r.id + ':photo'];
+    if(r.scorer){
+      h += '<div class="shs">' + esc(t.topScorer) + '</div><div class="shbig">👑</div>' + logoHtml(r.id, tname(x, r.id), 110) +
+        '<div class="shn">' + esc(r.scorer.map(q => q.n).join(' / ')) + '</div><div class="shs">' + esc(r.scorer.map(q => tname(x, q.team)).filter((v, j, a) => a.indexOf(v) === j).join(' / ') + ' · ' + t.goalsLbl(r.scorer[0].goals)) + '</div>' + confetti;
+      h += '</div><div class="shf">' + (i + 1) + ' / ' + n + '</div>';
+      el.innerHTML = h;
+      return;
+    }
     h += '<div class="shs">' + esc(r.pos != null ? t.showPlace(r.pos) : t.showParticipant) + '</div><div class="shbig">' + medal(r.pos) + '</div>' +
       (photo ? '<img class="shph" src="' + esc(photo) + '" alt="" />' : logoHtml(r.id, tname(x, r.id), 120)) +
       '<div class="shn">' + esc(tname(x, r.id)) + '</div>' + (r.pos === 1 ? confetti : '');
@@ -4065,7 +4137,7 @@ function showNext(){
   if(!SHOW || SHOW.i >= SHOW.order.length) return;
   SHOW.i++;
   const r = SHOW.order[SHOW.i];
-  if(!r || (r.pos != null && r.pos <= 3)) fanfare();
+  if(!r || r.scorer || (r.pos != null && r.pos <= 3)) fanfare();
   else { try { unlockAudio(); if(audioCtx) tone([660, 880], 0, 0.25, 'triangle', 0.2); } catch(e){} }
   renderShow();
 }
@@ -4269,7 +4341,7 @@ function certSheet(x){
   const maxPos = A.rank.length ? A.rank[A.rank.length - 1].pos : 0;
   st.upTo = clampN(st.upTo, 1, Math.max(1, maxPos));
   let b = '<div style="display:flex;gap:14px;align-items:flex-start"><img id="cs-prev" alt="" style="width:120px;border-radius:6px;background:#fff;min-height:170px" /><div style="flex:1">' +
-    '<div class="chips">' + CERT_TYPES.filter(ty => !(hide && ty === 'place')).map(ty => '<button class="chip' + (st.type === ty ? ' on' : '') + '" data-act="csType" data-v="' + ty + '">' + esc(t['certT_' + ty]) + '</button>').join('') + '</div>';
+    '<div class="chips">' + CERT_TYPES.filter(ty => !(hide && ty === 'place') && (ty !== 'scorer' || topScorers(A).length || st.type === 'scorer')).map(ty => '<button class="chip' + (st.type === ty ? ' on' : '') + '" data-act="csType" data-v="' + ty + '">' + esc(t['certT_' + ty]) + '</button>').join('') + '</div>';
   if(st.type === 'place') b += '<div class="step"><div class="lbl">' + esc(t.certUpTo) + '</div><div class="ctl"><button data-act="csStep" data-d="-1">−</button><span class="val num">' + st.upTo + '</span><button data-act="csStep" data-d="1">+</button></div></div>';
   const n = certList(x, st.type, st.upTo).length;
   b += '<div class="hint">' + esc(t.certCount(n)) + (st.type === 'place' && !A.rankDone ? ' ' + esc(t.certNotFinal) : '') + '</div></div></div>' +
@@ -4516,13 +4588,19 @@ function penaltiesHtml(x, slot){
   });
   return out.length ? sec(t.penalties) + '<div class="card" style="padding:6px 14px">' + out.join('') + '</div>' : '';
 }
+/* Torschuetzenkoenig(e): alle mit den meisten Toren (Gleichstand = mehrere) */
+function topScorers(A){
+  const l = A && A.stats ? A.stats.scorers : [];
+  return l.length && l[0].goals > 0 ? l.filter(q => q.goals === l[0].goals) : [];
+}
 function scorersHtml(x, A, limit){
   const t = T(), list = A.stats.scorers;
   if(!list.length) return '';
   let pos = 0, prev = null;
   return '<div class="card" style="padding:6px 14px">' + list.slice(0, limit || 999).map((s, i) => {
     if(s.goals !== prev){ pos = i + 1; prev = s.goals; }
-    return '<div class="rk"><span class="p">' + pos + '.</span>' + logoHtml(s.team, tname(x, s.team), 24) + '<span class="nm">' + esc(s.n) + ' <span style="color:var(--muted);font-weight:500">· ' + esc(tname(x, s.team)) + '</span></span>' +
+    const king = pos === 1 && s.goals > 0;
+    return '<div class="rk"><span class="p">' + (king ? '<span role="img" aria-label="' + esc(t.topScorer) + '">👑</span>' : pos + '.') + '</span>' + logoHtml(s.team, tname(x, s.team), 24) + '<span class="nm"' + (king ? ' style="font-weight:800"' : '') + '>' + esc(s.n) + ' <span style="color:var(--muted);font-weight:500">· ' + esc(tname(x, s.team)) + '</span></span>' +
       '<b class="num">' + s.goals + (s.pens ? ' <small style="color:var(--muted)">(' + t.pensShort(s.pens) + ')</small>' : '') + '</b></div>';
   }).join('') + '</div>';
 }
@@ -4843,7 +4921,7 @@ const MARK_KEY = 'freeTour';
 let STORE_PRICE = null;
 const isPro = () => !FREEMIUM || DB.pro === true;
 /* darf dieses Turnier alle Funktionen nutzen? */
-const fullFor = x => isPro() || !DB.freeId || !!(x && x.id === DB.freeId);
+const fullFor = x => isPro() || !DB.freeId || !!(x && x.id === DB.freeId) || isDemo(x);
 /* globale Einstellungen (Signaltoene): frei, solange das Gratis-Turnier laeuft */
 function fullNow(){
   if(isPro() || !DB.freeId) return true;
@@ -4865,7 +4943,7 @@ function needProNew(){
 }
 /* Gratis-Turnier festhalten (beim ersten Spielplan bzw. Empfang eines fertigen Turniers) */
 function claimFree(x){
-  if(!FREEMIUM || isPro() || DB.freeId || !x) return;
+  if(!FREEMIUM || isPro() || DB.freeId || !x || isDemo(x)) return;
   DB.freeId = x.id; save();
   markSet(x.id);
 }
@@ -4873,7 +4951,7 @@ function claimFree(x){
    der Testphase oder einer Sicherung): das aelteste zaehlt als Gratis-Turnier. */
 function ensureFree(){
   if(!FREEMIUM || isPro() || DB.freeId) return;
-  const b = DB.tours.filter(built).sort((a, c) => (a.created || 0) - (c.created || 0))[0];
+  const b = DB.tours.filter(x => built(x) && !isDemo(x)).sort((a, c) => (a.created || 0) - (c.created || 0))[0];
   if(b) claimFree(b);
 }
 function markApi(){ return window.TpMark && typeof window.TpMark.get === 'function' ? window.TpMark : null; }
