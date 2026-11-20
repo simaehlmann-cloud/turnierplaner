@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TurnierPro herunterladen</title>
+<meta name="description" content="TurnierPro – Turniere für Verein und Sportunterricht planen. Für iPhone, iPad und Android.">
+<meta property="og:title" content="TurnierPro – Turnierplaner">
+<meta property="og:description" content="Spielplan, Turnieruhr für alle Felder, Live-Tabellen und Siegerehrung mit Urkunden – offline, ohne Konto.">
+<meta property="og:image" content="https://simaehlmann-cloud.github.io/turnierplaner/icon_store.png">
+<meta name="theme-color" content="#1a1a1a">
+<!--
+  Neutrale Download-Seite fuer "TurnierPro weiterempfehlen".
+  Die App teilt nur diesen Link (Apple erlaubt in der iOS-App keine Hinweise
+  auf andere Plattformen). Handys werden automatisch in ihren Store geleitet,
+  am Computer stehen beide Knoepfe. Liegt nur auf GitHub Pages, nicht in der App.
+-->
+<style>
+  :root { --bg:#d8f0da; --card:#fff; --text:#1b3a1f; --border:#3d9c41; --muted:#4a6a4f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1a1a1a; --card:#242424; --text:#e9efe9; --border:#4caf50; --muted:#9fb3a2; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; padding:24px 16px calc(40px + env(safe-area-inset-bottom));
+    background:var(--bg); color:var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height:1.5; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  }
+  main { width:100%; max-width:520px; background:var(--card); text-align:center;
+         border:3px solid var(--border); border-radius:12px; padding:32px 24px; }
+  img { width:112px; height:112px; border-radius:24px; box-shadow:0 6px 18px rgba(0,0,0,.25); }
+  h1 { font-size:clamp(26px,6vw,34px); margin:16px 0 4px; }
+  p { margin:0 0 8px; }
+  .muted { color:var(--muted); font-size:15px; }
+  .btns { display:flex; flex-direction:column; gap:12px; margin:24px 0 8px; }
+  .btns a { display:block; padding:14px 20px; background:var(--border); color:#fff;
+            border-radius:10px; text-decoration:none; font-weight:700; font-size:17px; }
+  .hint { min-height:1.5em; font-size:14px; color:var(--muted); }
+  footer { margin-top:24px; font-size:14px; }
+  footer a { color:var(--border); }
+</style>
+</head>
+<body>
+<main>
+  <img src="icon_store.png" alt="TurnierPro">
+  <h1>TurnierPro</h1>
+  <p id="claim">Turniere für Verein und Sportunterricht planen – vom Spielplan bis zur Siegerehrung.</p>
+  <p class="muted" id="sub">Offline · ohne Konto · ohne Werbung</p>
+  <div class="btns">
+    <a id="ios" href="https://apps.apple.com/app/id6827714338">App Store (iPhone &amp; iPad)</a>
+    <a id="android" href="https://play.google.com/store/apps/details?id=de.turnierpro.app">Google Play (Android)</a>
+  </div>
+  <p class="hint" id="hint"></p>
+  <footer><a id="imp" href="impressum.html">Impressum</a> · <a id="ds" href="datenschutz.html">Datenschutz</a></footer>
+</main>
+<script>
+(function(){
+  var en = !/^de\b/i.test(navigator.language || '');
+  if (en) {
+    document.documentElement.lang = 'en';
+    document.title = 'Download TurnierPro';
+    document.getElementById('claim').textContent = 'Plan tournaments for clubs and PE classes – from the schedule to the award ceremony.';
+    document.getElementById('sub').textContent = 'Offline · no account · no ads';
+    document.getElementById('ios').textContent = 'App Store (iPhone & iPad)';
+    document.getElementById('android').textContent = 'Google Play (Android)';
+    document.getElementById('imp').textContent = 'Imprint'; document.getElementById('imp').href = 'impressum-en.html';
+    document.getElementById('ds').textContent = 'Privacy policy'; document.getElementById('ds').href = 'datenschutz-en.html';
+  }
+  // Handys direkt in ihren Store leiten (iPadOS meldet sich als "Macintosh" mit Touch)
+  if (/[?&]stay\b/.test(location.search)) return;
+  var ua = navigator.userAgent || '';
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/.test(ua);
+  var target = ios ? 'ios' : android ? 'android' : null;
+  if (!target) return;
+  document.getElementById('hint').textContent = en ? 'Opening the store …' : 'Der Store wird geöffnet …';
+  setTimeout(function(){ location.replace(document.getElementById(target).href); }, 400);
+})();
+</script>
+</body>
+</html>

@@ -60,6 +60,19 @@ button { font:inherit; color:inherit; border:0; background:none; cursor:pointer;
 #top button#right, #top button#right2 { font-size:22px; }
 #back[hidden], #right[hidden], #right2[hidden], #flags[hidden] { display:none; }
 #flags { display:flex; gap:4px; margin-right:2px; }
+#onb { position:fixed; inset:0; z-index:60; background:var(--bg); display:flex; flex-direction:column; padding:calc(var(--safe-t) + 14px) 22px calc(var(--safe-b) + 22px); }
+#onb[hidden] { display:none; }
+#onb .otop { display:flex; align-items:center; gap:6px; }
+#onb .otop .skip { background:none; border:0; color:var(--green); font:inherit; font-weight:700; font-size:16px; padding:12px 8px; min-height:44px; }
+#onb .ob { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; max-width:460px; margin:0 auto; }
+#onb .oi { font-size:72px; line-height:1; margin-bottom:18px; }
+#onb h2 { font-size:26px; font-weight:900; margin:0 0 10px; }
+#onb p { font-size:17px; line-height:1.5; color:var(--muted); margin:0; }
+#onb .dots { display:flex; gap:8px; justify-content:center; margin:22px 0 18px; }
+#onb .dots i { width:9px; height:9px; border-radius:5px; background:var(--line); }
+#onb .dots i.on { background:var(--green); width:24px; }
+#onb .flag { width:42px; height:40px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:none; border:0; }
+#onb .obtn { max-width:460px; width:100%; margin:0 auto; }
 #top button.flag { min-width:0; width:42px; height:40px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:8px; }
 .flag svg { border-radius:3px; opacity:.45; transition:opacity .15s, transform .15s; box-shadow:0 0 0 1px rgba(255,255,255,.25); }
 .flag.on svg { opacity:1; transform:scale(1.1); box-shadow:0 0 0 2px #fff; }
@@ -353,6 +366,7 @@ body.beam .wrap.wide { max-width:1600px; }
 <main id="view"></main>
 <div id="ov" data-act="closeSheet"></div>
 <div id="sheet" role="dialog" aria-modal="true"></div>
+<div id="onb" hidden></div>
 <div id="toast"></div>
 <input type="file" id="file-in" accept=".json,application/json,text/plain" style="display:none" />
 <input type="file" id="img-in" accept="image/*" style="display:none" />
@@ -396,6 +410,16 @@ const I18N = {
     importError: 'Das ist keine TurnierPro-Sicherung.', imported: (a, b) => 'Importiert: ' + a + ' Teams, ' + b + ' Turniere.',
     saveFailed: 'Speichern fehlgeschlagen – Speicher voll?', imgSaveFailed: 'Bild konnte nicht gespeichert werden.', imgFailed: 'Bild konnte nicht gelesen werden.',
     copied: 'In die Zwischenablage kopiert.',
+    onbSkip: 'Überspringen', onbNext: 'Weiter', onbGo: "Los geht's", onbAgain: 'Einführung ansehen',
+    onbSteps: [
+      ['🏆', 'Willkommen bei TurnierPro', 'Turniere für Verein und Sportunterricht planen – vom Spielplan bis zur Siegerehrung. Alles offline, ohne Konto.'],
+      ['📋', 'Turnier anlegen', 'Teams eintragen, Modus wählen – Gruppen, jeder gegen jeden, K.-o. oder Kinderfußball – und auslosen. Der Spielplan mit Feldern, Zeiten und Schiris steht sofort.'],
+      ['⏱️', 'Am Turniertag', 'Eine Uhr für alle Felder, Ergebnisse antippen, Tabellen rechnen live. Dazu Beamer-Modus und Weitergabe per QR-Code an ein zweites Gerät.'],
+      ['🥇', 'Siegerehrung', 'Platz für Platz aufs Podest, mit Torschützenkönig und Urkunden als PDF oder Word. Tipp: Schau dir zuerst das Beispielturnier an.']
+    ],
+    recommend: 'TurnierPro weiterempfehlen', rate: 'TurnierPro bewerten', feedback: 'Feedback senden',
+    feedbackSubject: 'TurnierPro – Feedback', feedbackBody: v => 'Hallo Simon,\n\n\n\n---\nTurnierPro ' + v,
+    recommendText: 'Schau dir TurnierPro an – Turniere für Verein und Sportunterricht in Minuten planen: Spielplan, Turnieruhr für alle Felder, Live-Tabellen und Siegerehrung mit Urkunden. Offline, ohne Konto und Werbung.',
     theme: 'Darstellung', themeDark: 'Dunkel', themeLight: 'Hell (Sonne)',
     soundTest: 'Signaltöne testen', soundTestHint: 'Anpfiff, letzte Minute, Ende',
     aboutTitle: 'Über TurnierPro', privacy: 'Datenschutz', imprint: 'Impressum',
@@ -622,6 +646,16 @@ const I18N = {
     importError: 'This is not a TurnierPro backup.', imported: (a, b) => 'Imported: ' + a + ' teams, ' + b + ' tournaments.',
     saveFailed: 'Saving failed – storage full?', imgSaveFailed: 'Picture could not be saved.', imgFailed: 'Picture could not be read.',
     copied: 'Copied to clipboard.',
+    onbSkip: 'Skip', onbNext: 'Next', onbGo: "Let's go", onbAgain: 'Show the introduction',
+    onbSteps: [
+      ['🏆', 'Welcome to TurnierPro', 'Plan tournaments for clubs and PE classes – from the schedule to the award ceremony. Fully offline, no account.'],
+      ['📋', 'Create a tournament', 'Add teams, pick a format – groups, round robin, knockout or kids football – and draw. The schedule with pitches, times and referees is ready instantly.'],
+      ['⏱️', 'On the day', 'One clock for every pitch, tap in the scores, tables update live. Plus projector mode and handover to a second device by QR code.'],
+      ['🥇', 'Award ceremony', 'Place by place up to the podium, with top scorer and certificates as PDF or Word. Tip: have a look at the example tournament first.']
+    ],
+    recommend: 'Recommend TurnierPro', rate: 'Rate TurnierPro', feedback: 'Send feedback',
+    feedbackSubject: 'TurnierPro – Feedback', feedbackBody: v => 'Hi Simon,\n\n\n\n---\nTurnierPro ' + v,
+    recommendText: 'Check out TurnierPro – plan tournaments for clubs and PE classes in minutes: schedule, one clock for every pitch, live tables and an award ceremony with certificates. Offline, no account, no ads.',
     theme: 'Appearance', themeDark: 'Dark', themeLight: 'Light (sun)',
     soundTest: 'Test signals', soundTestHint: 'Kick-off, last minute, end',
     aboutTitle: 'About TurnierPro', privacy: 'Privacy', imprint: 'Legal notice',
@@ -871,7 +905,7 @@ function fmtDate(s){
    DATEN (localStorage)
 --------------------------------------------------------------------- */
 const DATA_KEY = 'turnierpro_data';
-const APP_VERSION = '1.1.0';   // gleich halten mit version="..." in config.xml
+const APP_VERSION = '1.1.1';   // gleich halten mit version="..." in config.xml
 const DEFAULT_CFG = {
   mode: 'groups',          // 'league' | 'groups' | 'ko' | 'kids'
   fields: 2, fieldStyle: 'num', fieldNames: [],
@@ -1304,6 +1338,7 @@ function go(route){ closeSheet(); STACK.push(route); render(true); }
 function replace(route){ closeSheet(); STACK[STACK.length - 1] = route; render(true); }
 function back(){
   if(DRAG) return true;
+  if(ONB >= 0){ A.onbEnd(); return true; }
   if(SHOW){ closeShow(); return true; }
   if(SCAN){ stopScan(); return true; }
   if(sheetOpen()){ closeSheet(); return true; }
@@ -2670,6 +2705,54 @@ function lateness(x, k, times){
   return diff >= 3 && diff < 240 ? diff : 0;
 }
 
+/* ----- Weiterempfehlen, Bewerten, Feedback (Rueckmeldungen aus dem Play-Test) -----
+   Weiterempfehlen teilt nur EINEN neutralen Link: download.html auf GitHub Pages
+   leitet jedes Handy in seinen Store. Apple erlaubt in der iOS-App keine Hinweise
+   auf andere Plattformen - deshalb steht im Text weder "Android" noch ein Play-Link. */
+const DOWNLOAD_URL = 'https://simaehlmann-cloud.github.io/turnierplaner/download.html';
+const APPLE_ID = '6827714338';
+const STORE_IOS = 'https://apps.apple.com/app/id' + APPLE_ID;
+const STORE_ANDROID = 'https://play.google.com/store/apps/details?id=de.turnierpro.app';
+function rateHref(){
+  const plat = window.cordova && window.cordova.platformId;
+  if(plat === 'ios') return 'itms-apps://itunes.apple.com/app/id' + APPLE_ID + '?action=write-review';
+  if(plat === 'android') return 'market://details?id=de.turnierpro.app';
+  return /iPhone|iPad|Macintosh/.test(navigator.userAgent) ? STORE_IOS + '?action=write-review' : STORE_ANDROID;
+}
+/* Eintrag "bewerten" im Einstellungs-Blatt (oeffnet den Store) */
+function rateAct(){ return act('rate', '⭐', T().rate, ''); }
+/* Feedback per E-Mail: Version und Geraet stehen schon drin */
+function feedbackHref(){
+  const t = T();
+  const plat = (window.cordova && window.cordova.platformId) || 'web';
+  const os = (navigator.userAgent.match(/Android [\d.]+|(?:iPhone|CPU) OS [\d_]+|iPad/) || [''])[0].replace(/_/g, '.');
+  return 'mailto:smaehlmann.appdev@gmail.com?subject=' + encodeURIComponent(t.feedbackSubject) +
+    '&body=' + encodeURIComponent(t.feedbackBody(APP_VERSION + ' · ' + plat + (os ? ' · ' + os : '')));
+}
+function openExternal(url){
+  // in der App ueber den System-Browser bzw. die Store-App (allow-intent in config.xml)
+  if(window.cordova && window.cordova.InAppBrowser){ window.cordova.InAppBrowser.open(url, '_system'); return; }
+  location.href = url;
+}
+
+/* ----- Einfuehrung beim ersten Start (4 Schritte) ----- */
+let ONB = -1;
+function onbDone(){ try { return localStorage.getItem('tp_onboarding_done') === '1'; } catch(e){ return true; } }
+function renderOnb(){
+  const el = $('onb');
+  if(!el) return;
+  if(ONB < 0){ el.hidden = true; el.innerHTML = ''; return; }
+  const t = T(), steps = t.onbSteps, x = steps[ONB], last = ONB === steps.length - 1;
+  const flags = $('flags').innerHTML.replace(/gbc/g, 'gbc2');
+  el.innerHTML = '<div class="otop">' + flags + '<span style="flex:1"></span><button class="skip" data-act="onbEnd">' + esc(t.onbSkip) + '</button></div>' +
+    '<div class="ob"><div class="oi" aria-hidden="true">' + x[0] + '</div><h2>' + esc(x[1]) + '</h2><p>' + esc(x[2]) + '</p></div>' +
+    '<div class="dots" aria-hidden="true">' + steps.map((_, i) => '<i class="' + (i === ONB ? 'on' : '') + '"></i>').join('') + '</div>' +
+    '<div class="obtn"><button class="btn lg" data-act="' + (last ? 'onbEnd' : 'onbNext') + '">' + esc(last ? t.onbGo : t.onbNext) + '</button>' +
+    (last && !tourById(DB.demoId) ? '<button class="btn ghost" data-act="onbDemo" style="margin-top:8px">▶ ' + esc(t.demoBtn) + '</button>' : '') + '</div>';
+  el.querySelectorAll('.flag').forEach(f => f.classList.toggle('on', f.dataset.v === LANG));
+  el.hidden = false;
+}
+
 /* ----- Ueber die App ----- */
 function viewAbout(){
   const t = T();
@@ -2678,6 +2761,10 @@ function viewAbout(){
   return '<div class="card about"><div class="about-head"><img src="image.png" alt="" width="72" height="72" /><div><div class="ah1">' + esc(t.appName) + '</div>' +
     '<div class="hint" style="margin:2px 0 0">' + esc(t.version) + ' ' + APP_VERSION + '</div></div></div><div style="height:14px"></div>' +
     t.aboutText.map(p => '<p>' + p + '</p>').join('') + '</div>' +
+    '<button class="btn soft" data-act="onbShow" style="margin-top:12px">💡 ' + esc(t.onbAgain) + '</button>' +
+    '<button class="btn soft" data-act="recommend" style="margin-top:8px">📣 ' + esc(t.recommend) + '</button>' +
+    (rateHref() ? '<a class="btn soft" style="text-decoration:none;margin-top:8px" href="' + rateHref() + '">⭐ ' + esc(t.rate) + '</a>' : '') +
+    '<a class="btn soft" style="text-decoration:none;margin-top:8px" href="' + feedbackHref() + '">✉︎ ' + esc(t.feedback) + '</a>' +
     '<div class="row2" style="margin-top:12px"><a class="btn ghost" href="' + ds + '">' + esc(t.privacy) + '</a><a class="btn ghost" href="' + im + '">' + esc(t.imprint) + '</a></div>';
 }
 
@@ -3366,10 +3453,17 @@ const A = {
   lang(el){
     LANG = el.dataset.v === 'en' ? 'en' : 'de';
     try { localStorage.setItem('tp_lang', LANG); } catch(e){}
-    document.documentElement.lang = LANG; render(false);
+    document.documentElement.lang = LANG; render(false); if(ONB >= 0) renderOnb();
   },
   tab(el){ cur().tab = el.dataset.v; render(true); },
   goAbout(){ go({ v: 'about' }); },
+  onbNext(){ ONB = Math.min(ONB + 1, T().onbSteps.length - 1); renderOnb(); },
+  onbEnd(){ ONB = -1; try { localStorage.setItem('tp_onboarding_done', '1'); } catch(e){} renderOnb(); },
+  onbShow(){ closeSheet(); ONB = 0; renderOnb(); },
+  onbDemo(){ A.onbEnd(); A.demoOpen(); },
+  recommend(){ closeSheet(); const t = T(); shareText(t.recommendText + '\n\n' + DOWNLOAD_URL, 'TurnierPro'); },
+  rate(){ closeSheet(); openExternal(rateHref()); },
+  feedback(){ closeSheet(); location.href = feedbackHref(); },
   goTeams(){ go({ v: 'teams' }); },
   goTeamsFromSheet(){ closeSheet(); go({ v: 'teams' }); },
   settings(){
@@ -3381,6 +3475,7 @@ const A = {
       '<div class="card" style="margin-bottom:8px">' + soundSettingsHtml() + '</div>' +
       (FREEMIUM ? (isPro() ? '<div class="card" style="margin-bottom:8px">⭐ <b>' + esc(t.proActive) + '</b></div>' : act('paywall', '⭐', t.proTitle, DB.freeId ? t.proShort : t.proFreeHint)) + act('proRestore', '↺', t.proRestore, '') : '') +
       act('goCertCfg', '🏅', t.certSettings, t.certSettingsShort) + act('tplManage', '📋', t.tplManage, t.tplManageShort) +
+      act('onbShow', '💡', t.onbAgain, '') + act('recommend', '📣', t.recommend, '') + rateAct() + act('feedback', '✉︎', t.feedback, '') +
       act('goAbout', 'ⓘ', t.aboutTitle, ''));
   },
   theme(el){ THEME = el.dataset.v === 'light' ? 'light' : 'dark'; try { localStorage.setItem('tp_theme', THEME); } catch(e){} applyTheme(); A.settings(); },
@@ -5220,6 +5315,12 @@ document.addEventListener('deviceready', () => {
   initMark();
 }, false);
 ensureFree();
+
+/* Einfuehrung nur fuer neue Nutzer (noch kein Turnier); wer schon Turniere hat, sieht sie nicht */
+if(!onbDone()){
+  if(DB.tours.length) { try { localStorage.setItem('tp_onboarding_done', '1'); } catch(e){} }
+  else { ONB = 0; renderOnb(); }
+}
 
 /* Web-Fassung: offline nutzbar */
 if('serviceWorker' in navigator && location.protocol === 'https:' && location.hostname !== 'localhost'){
